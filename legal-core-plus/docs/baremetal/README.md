@@ -35,7 +35,7 @@ Must have:
 | name                                      | value         | description                                                                                                                                                                                                                                                                                              | sensitive? | source |
 |-------------------------------------------|---------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------|--------|
 | `<POSTGRES_PASSWORD_ENV_VARIABLE_NAME>`   | ex `password` | Potgres user, name of that variable not defined at the service level, the name will be received through partition service. Each tenant can have it's own ENV name value, and it must be present in ENV of Legal service, see [Partition properties set](#Properties-set-in-Partition-service)            | yes        | -      |
-| `<MINIO_SECRETKEY_ENV_VARIABLE_NAME>`     | ex `password` | Minio password, name of that variable not defined at the service level, the name will be received through partition service. Each tenant can have it's own ENV name value, and it must be present in ENV of Legal service, see [Partition properties set](#Properties-set-in-Partition-service)          | false      | -      |
+| `<S3_SECRETKEY_ENV_VARIABLE_NAME>`        | ex `password` | S3 secret key, name of that variable not defined at the service level, the name will be received through partition service. Each tenant can have it's own ENV name value, and it must be present in ENV of Legal service, see [Partition properties set](#Properties-set-in-Partition-service)           | false      | -      |
 | `<AMQP_PASSWORD_ENV_VARIABLE_NAME>`       | ex `password` | RabbitMQ password, name of that variable not defined at the service level, the name will be received through partition service. Each tenant can have it's own ENV name value, and it must be present in ENV of Legal service, see [Partition properties set](#Properties-set-in-Partition-service)       | false      | -      |
 | `<AMQP_ADMIN_PASSWORD_ENV_VARIABLE_NAME>` | ex `password` | RabbitMQ Admin password, name of that variable not defined at the service level, the name will be received through partition service. Each tenant can have it's own ENV name value, and it must be present in ENV of Legal service, see [Partition properties set](#Properties-set-in-Partition-service) | false      | -      |
 
@@ -256,53 +256,56 @@ Consumer side `legaltags-changed` topic configuration located in
 
 ![Screenshot](./pics/rabbit.PNG)
 
-## Minio configuration:
+## S3 (SeaweedFS) configuration:
 
 ### Properties set in Partition service:
 
-**prefix:** `obm.minio`
+**prefix:** `obm.s3`
 
 It can be overridden by:
 
-- through the Spring Boot property `obm.minio.partition-properties-prefix`
-- environment variable `OBM_MINIO_PARTITION_PROPERTIES_PREFIX`
+- through the Spring Boot property `obm.s3.partition-properties-prefix`
+- environment variable `OBM_S3_PARTITION_PROPERTIES_PREFIX`
 
 **Propertyset** (for two types of connection: messaging and admin operations):
 
-| Property                         | Description |
-|----------------------------------|-------------|
-| obm.minio.endpoint               | - url       |
-| obm.minio.credentials.access.key | - username  |
-| obm.minio.credentials.secret.key | - password  |
+| Property          | Description |
+|-------------------|-------------|
+| obm.s3.endpoint   | - url       |
+| obm.s3.accessKey  | - username  |
+| obm.s3.secretKey  | - password  |
+| obm.s3.region     | - region    |
 
 <details><summary>Example of a single tenant definition</summary>
 
 ```
-
 curl -L -X PATCH 'https://dev.osdu.club/api/partition/v1/partitions/opendes' -H 'data-partition-id: opendes' -H 'Authorization: Bearer ...' -H 'Content-Type: application/json' --data-raw '{
   "properties": {
-    "obm.minio.endpoint": {
+    "obm.s3.endpoint": {
       "sensitive": false,
-      "value": "localhost"
+      "value": "http://localhost:8333"
     },
-    "obm.minio.credentials.access.key": {
-      "sensitive": false,
-      "value": "minioadmin"
+    "obm.s3.accessKey": {
+      "sensitive": true,
+      "value": "your-access-key"
     },
-    "obm.minio.credentials.secret.key": {
+    "obm.s3.secretKey": {
+      "sensitive": true,
+      "value": "SEAWEEDFS_SECRETKEY_ENV_VARIABLE_NAME>" <- (Not actual value, just name of env variable)"
+    },
+    "obm.s3.region": {
       "sensitive": false,
-      "value": "<MINIO_SECRETKEY_ENV_VARIABLE_NAME>" <- (Not actual value, just name of env variable)
+      "value": "us-east-1"
     }
   }
 }'
-
 ```
 
 </details>
 
 ## Object store configuration <a name="ObjectStoreConfig"></a>
 ### Used Technology
-MinIO (or any other supported by OBM)
+SeaweedFS (or any other supported by OBM)
 
 ### Per-tenant buckets configuration
 These buckets must be defined in tenants’ dedicated object store servers. OBM connection properties of these servers (url, etc.) are defined as specific properties in tenants’ PartitionInfo registration objects at the Partition service as described in accordant sections of this document.

@@ -22,7 +22,7 @@ It allows you to work with various implementations of KV stores, Message brokers
 In the current version, the mappers are equipped with several drivers to the stores:
 
 - OSM (mapper for KV-data): Postgres
-- OBM (mapper to Blob stores): MinIO
+- OBM (mapper to Blob stores): SeaweedFS
 - OQM (mapper to message brokers): RabbitMQ
 
 ## Extensibility
@@ -41,7 +41,7 @@ They switch between datasources of different tenants due to the work of a bunch 
 This service uses specific implementations of DestinationResolvers based on the tenant information provided by the OSDU Partition service.
 
 - for Postgres: osm/PgTenantDestinationResolver.java
-- for MinIO: obm/MinioDestinationResolver.java
+- for SeaweedFS: obm/S3DestinationResolver.java
 - for RabbitMQ: oqm/MqTenantOqmDestinationResolver.java
 
 #### Their algorithms are as follows
@@ -112,14 +112,14 @@ mvn clean install -DskipTests
 - Drivers should be downloaded.
 ```bash
     - mvn dependency:copy -DrepoUrl=$OSM_PACKAGE_REGISTRY_URL -Dartifact="org.opengroup.osdu:os-osm-postgres:$OSM_VERSION:jar:plugin" -Dtransitive=false -DoutputDirectory="./tmp"
-    - mvn dependency:copy -DrepoUrl=$OBM_PACKAGE_REGISTRY_URL -Dartifact="org.opengroup.osdu:os-obm-minio:$OBM_VERSION:jar:plugin" -Dtransitive=false -DoutputDirectory="./tmp"
+    - mvn dependency:copy -DrepoUrl=$OBM_PACKAGE_REGISTRY_URL -Dartifact="org.opengroup.osdu:os-obm-s3:$OBM_VERSION:jar:plugin" -Dtransitive=false -DoutputDirectory="./tmp"
     - mvn dependency:copy -DrepoUrl=$OQM_PACKAGE_REGISRTY_URL -Dartifact="org.opengroup.osdu:os-oqm-rabbitmq:$OQM_VERSION:jar:plugin" -Dtransitive=false -DoutputDirectory="./tmp"
 
 ```
 After configuring your environment as specified above, you can follow these steps to build and run the application. These steps should be invoked from the *repository root.*
 
 ```bash
-cd provider/legal-core-plus/target 
+cd legal-core-plus/target 
 java --add-opens java.base/java.lang=ALL-UNNAMED \
          --add-opens java.base/java.lang.reflect=ALL-UNNAMED \
          -Djava.security.egd=file:/dev/./urandom \
