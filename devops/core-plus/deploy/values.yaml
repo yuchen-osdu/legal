@@ -5,6 +5,7 @@
 global:
   domain: ""
   limitsEnabled: true
+  dataPartitionId: ""
 
 data:
   # configmaps
@@ -29,6 +30,7 @@ conf:
   configmap: "legal-config"
   appName: "legal"
   minioSecretName: "legal-minio-secret"
+  legalS3SecretName: "legal-seaweedfs-secret"
   postgresSecretName: "legal-postgres-secret"
   rabbitmqSecretName: "rabbitmq-secret"
   bootstrapSecretName: "datafier-secret"

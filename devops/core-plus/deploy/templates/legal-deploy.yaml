@@ -33,6 +33,8 @@ spec:
         - secretRef:
             name: {{ .Values.conf.minioSecretName | quote }}
         - secretRef:
+            name: {{ printf "%s-%s" .Values.global.dataPartitionId .Values.conf.legalS3SecretName | quote }}
+        - secretRef:
             name: {{ .Values.conf.postgresSecretName | quote }}
         - secretRef:
             name: {{ .Values.conf.rabbitmqSecretName | quote }}
