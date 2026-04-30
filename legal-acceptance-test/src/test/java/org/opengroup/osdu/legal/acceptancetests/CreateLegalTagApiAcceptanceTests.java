@@ -158,7 +158,7 @@ public final class CreateLegalTagApiAcceptanceTests extends AcceptanceBaseTest {
     @Test
     public void should_allowCreationOfALegalTag_When_countryOfOriginIsSetToClientConsentRequiredInTenant_andDataTypeIsFirstPartyData() throws Exception{
         //legalTagUtils.uploadTenantTestingConfigFile();
-        ClientResponse response = legalTagUtils.create("MY", name, "First Party Data");
+        ClientResponse response = legalTagUtils.create("US", name, "First Party Data");
         LegalTagUtils.ReadableLegalTag readableLegalTags = legalTagUtils.getResult(response, 201, LegalTagUtils.ReadableLegalTag.class);
         
         System.out.println(">>>" + readableLegalTags.name);
