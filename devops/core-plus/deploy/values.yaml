@@ -29,7 +29,6 @@ data:
 conf:
   configmap: "legal-config"
   appName: "legal"
-  minioSecretName: "legal-minio-secret"
   s3SecretName: "legal-seaweedfs-secret"
   postgresSecretName: "legal-postgres-secret"
   rabbitmqSecretName: "rabbitmq-secret"

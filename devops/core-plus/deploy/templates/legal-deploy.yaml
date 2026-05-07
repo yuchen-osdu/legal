@@ -31,8 +31,6 @@ spec:
         - configMapRef:
             name: {{ .Values.conf.configmap | quote }}
         - secretRef:
-            name: {{ .Values.conf.minioSecretName | quote }}
-        - secretRef:
             name: {{ printf "%s-%s" .Values.global.dataPartitionId .Values.conf.s3SecretName | quote }}
         - secretRef:
             name: {{ .Values.conf.postgresSecretName | quote }}
