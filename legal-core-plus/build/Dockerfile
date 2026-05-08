@@ -6,7 +6,7 @@ ARG PORT
 ENV PORT $PORT
 
 COPY tmp/os-oqm-rabbitmq-*.jar plugins/oqm-rabbitmq.jar
-COPY tmp/os-obm-minio-*.jar plugins/osm-minio.jar
+COPY tmp/os-obm-s3-*.jar plugins/osm-s3.jar
 COPY tmp/os-osm-postgres-*.jar plugins/osm-postgres.jar
 
 # Copy the jar to the production image from the builder stage.

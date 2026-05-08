@@ -98,6 +98,7 @@ First you need to set variables in **values.yaml** file using any code editor. S
 |------|-------------|------|---------|---------|
 **global.domain** | your domain for the external endpoint, ex `example.com` | string | - | yes
 **global.limitsEnabled** | whether CPU and memory limits are enabled | boolean | true | yes
+**global.dataPartitionId** | data partition id | string | - | yes
 
 ### Configmap variables
 
@@ -105,7 +106,6 @@ First you need to set variables in **values.yaml** file using any code editor. S
 |------|-------------|------|---------|---------|
 **data.logLevel** | logging level | string | ERROR | yes
 **data.acceptHttp** | accept Http traffic | string | true | yes
-**data.dataPartitionId** | data partition id | string | - | yes
 **data.entitlementsHost** | Entitlements host URL | string | <http://entitlements> | yes
 **data.defaultLegalTag** | Default legal tag | string | default-data-tag| yes
 **data.legalHost** | Legal host URL | string | <http://legal> | yes
@@ -129,7 +129,7 @@ First you need to set variables in **values.yaml** file using any code editor. S
 |------|-------------|------|---------|---------|
 **conf.configmap** | configmap to be used | string | legal-config | yes
 **conf.appName** | name of the app | string | legal | yes
-**conf.minioSecretName** | Secret name for minio service | string | legal-minio-secret | yes
+**conf.s3SecretName** | Secret name for seaweedfs service | string | legal-seaweedfs-secret | yes
 **conf.postgresSecretName** | Secret name for postgres service | string | legal-postgres-secret | yes
 **conf.rabbitmqSecretName** | Secret name for rabbitmq service | string | rabbitmq-secret | yes
 **conf.bootstrapSecretName** | Secret name for cronjob | string | datafier-secret | yes
