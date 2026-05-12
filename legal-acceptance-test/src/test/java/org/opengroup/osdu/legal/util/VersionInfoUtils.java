@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.google.gson.Gson;
 import com.sun.jersey.api.client.ClientResponse;
+import org.opengroup.osdu.core.common.model.info.VersionInfo;
 
 public class VersionInfoUtils {
 
@@ -14,13 +15,4 @@ public class VersionInfoUtils {
     return gson.fromJson(json, VersionInfo.class);
   }
 
-  public class VersionInfo {
-    public String groupId;
-    public String artifactId;
-    public String version;
-    public String buildTime;
-    public String branch;
-    public String commitId;
-    public String commitMessage;
-  }
 }
