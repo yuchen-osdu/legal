@@ -24,7 +24,7 @@ data:
   ACCEPT_HTTP: {{ .Values.data.acceptHttp | quote }}
   LOG_LEVEL: {{ .Values.data.logLevel | default .Values.global.logLevel | quote }}
   SPRING_PROFILES_ACTIVE: "gcp"
-  {{- if .Values.data.otelJavaagentEnabled }}
-  OTEL_JAVAAGENT_ENABLED: {{.Values.data.otelJavaagentEnabled | quote}}
+  {{- if .Values.global.otelJavaagentEnabled }}
+  OTEL_JAVAAGENT_ENABLED: {{.Values.global.otelJavaagentEnabled | quote}}
   OTEL_EXPORTER_OTLP_ENDPOINT: {{.Values.data.otelExporterEndpoint | quote}}
   {{- end }}

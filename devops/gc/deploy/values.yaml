@@ -8,6 +8,7 @@ global:
   logLevel: "ERROR"
   tier: ""
   autoscalingMode: "cpu"
+  otelJavaagentEnabled: "true"
 
 data:
   # configmaps
@@ -17,7 +18,6 @@ data:
   defaultLegalTag: "default-data-tag"
   legalHost: "http://legal"
   partitionHost: "http://partition"
-  otelJavaagentEnabled: "true"
   otelExporterEndpoint: "http://opentelemetry-collector.opentelemetry.svc.cluster.local:4318"
   # deployments
   requestsCpu: "50m"
