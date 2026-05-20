@@ -50,3 +50,11 @@ cimpl-containerize-cronjob-gitlab:
     - yq -e '.data | has("bootstrapImage")' $CIMPL_HELM_DEPLOYMENT_DIR/values.yaml &>/dev/null && BOOTSTRAP_IMAGE="$CI_REGISTRY_IMAGE/$CIMPL_IMAGE_BOOTSTRAP_NAME:$IMAGE_TAG" yq -i '.data.bootstrapImage = env(BOOTSTRAP_IMAGE)' $CIMPL_HELM_DEPLOYMENT_DIR/values.yaml
     - LEGALSTATUS_UPDATE_IMAGE="$CI_REGISTRY_IMAGE/$CIMPL_LEGALSTATUS_IMAGE_NAME:$IMAGE_TAG" yq -i '.data.legalStatusUpdateImage = env(LEGALSTATUS_UPDATE_IMAGE)' $CIMPL_HELM_DEPLOYMENT_DIR/values.yaml
     - cat $CIMPL_HELM_DEPLOYMENT_DIR/values.yaml | grep -i image
+
+#standby (Blue-Green): no per-service overrides required.
+# This service inherits cimpl-standby-deploy from the central
+# cimpl-standby-rosa.yml template. The .cimpl_set_image_name and
+# .cimpl_substitute_image_in_helm overrides above already apply to every
+# deploy (dev1, dev2, standby) because the central deploy script uses
+# !reference into these anchors. Enable standby deploys by setting
+# $CIMPL_STANDBY=1 in this project's CI/CD variables.
