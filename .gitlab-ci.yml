@@ -10,17 +10,11 @@ variables:
   AWS_DEPLOY_TARGET: TF
   AWS_EKS_DEPLOYMENT_NAME: os-legal
 
-  IBM_BUILD_SUBDIR: provider/legal-ibm
-  IBM_INT_TEST_SUBDIR: testing/legal-test-ibm
-
   AZURE_SERVICE: legal
   AZURE_BUILD_SUBDIR: provider/legal-azure
   AZURE_TEST_SUBDIR: testing/legal-test-azure
   AZURE_COVERAGE_THRESHOLD: 80
   SERVICE_JAVA_VERSION: "17"
-
-  IBM_HELM_CONFIG_PATH: devops/ibm/ibm-legal-config
-  IBM_HELM_DEPLOY_PATH: devops/ibm/ibm-legal-deploy
 
   # Spotbugs is only intended for Groovy, Scala, or Koitlin development; not Maven+Java
   # The presence of provider/legal-ibm/src/test/resources/logback.groovy is tricking GitLab into including the job
@@ -52,9 +46,6 @@ include:
     file: "cloud-providers/aws-maven.yml"
 
   - project: "osdu/platform/ci-cd-pipelines"
-    file: "cloud-providers/ibm.yml"
-
-  - project: "osdu/platform/ci-cd-pipelines"
     file: "cloud-providers/azure.yml"
 
   - project: "osdu/platform/ci-cd-pipelines"
@@ -71,9 +62,6 @@ include:
 
   - project: "osdu/platform/ci-cd-pipelines"
     file: "cloud-providers/gc-one-pipeline.yml"
-
-  - project: "osdu/platform/ci-cd-pipelines"
-    file: "cloud-providers/ibm-one-pipeline.yml"
 
   - local: "devops/gc/pipeline/override-stages.yml"
 
