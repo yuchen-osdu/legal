@@ -1,55 +1,33 @@
 package org.opengroup.osdu.legal.acceptancetests;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import org.apache.hc.core5.http.HttpStatus;
 import org.junit.jupiter.api.Test;
-import org.opengroup.osdu.legal.util.AcceptanceBaseTest;
-import org.opengroup.osdu.legal.util.LegalTagUtils;
+import org.opengroup.osdu.core.test.client.ClientException;
+import org.opengroup.osdu.core.test.client.HttpResponse;
+import org.opengroup.osdu.core.test.client.model.legal.LegalTag;
 
-public final class DeleteLegalTagApiAcceptanceTests extends AcceptanceBaseTest {
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-    private String name;
-    
-    @BeforeEach
-    @Override
-    public void setup() throws Exception {
-        this.legalTagUtils = new LegalTagUtils();
-        super.setup();
-    }
+public final class DeleteLegalTagApiAcceptanceTests extends LegalAcceptanceTests {
 
-    @AfterEach
-    @Override
-    public void teardown() throws Exception {
-        super.teardown();
-        this.legalTagUtils = null;
+    @Test
+    public void should_return204_when_deletingAContractThatDoesNotExist() {
+        assertEquals(HttpStatus.SC_NO_CONTENT, legalTagClient.delete(name).statusCode());
     }
 
     @Test
-    public void should_return204_when_deletingAContractThatDoesNotExist() throws Exception{
-        name = LegalTagUtils.createRandomNameTenant();
-        validateAccess(204);
+    public void should_return204_when_deletingAContractThatDoesExist() {
+        HttpResponse<LegalTag> createResponse = legalTagClient.create(createLegalTag(name));
+        assertJsonResponse(createResponse, HttpStatus.SC_CREATED);
+        String createdName = createResponse.body().name();
+        assertEquals(HttpStatus.SC_NO_CONTENT, legalTagClient.delete(createdName).statusCode());
     }
 
     @Test
-    public void should_return204_when_deletingAContractThatDoesExist() throws Exception{
-        name = LegalTagUtils.createRandomNameTenant();
-        legalTagUtils.getResult(legalTagUtils.create(name), 201, String.class );
-        validateAccess(204);
-    }
-
-    @Test
-    public void should_return400_when_deletingAContractWithAnInvalidName() throws Exception{
-        name = "invalid*name";
-        send("", 400);
-    }
-
-    @Override
-    protected String getApi() {
-        return "legaltags/" + name;
-    }
-
-    @Override
-    protected String getHttpMethod() {
-        return "DELETE";
+    public void should_return400_when_deletingAContractWithAnInvalidName() {
+        ClientException exception = assertThrows(ClientException.class,
+            () -> legalTagClient.delete("invalid*name"));
+        assertEquals(HttpStatus.SC_BAD_REQUEST, exception.getStatusCode());
     }
 }
