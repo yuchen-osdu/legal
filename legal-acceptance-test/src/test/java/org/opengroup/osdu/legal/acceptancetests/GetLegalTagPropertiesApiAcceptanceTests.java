@@ -1,67 +1,37 @@
 package org.opengroup.osdu.legal.acceptancetests;
 
+import org.apache.hc.core5.http.HttpStatus;
+import org.junit.jupiter.api.Test;
+import org.opengroup.osdu.core.test.client.HttpResponse;
+import org.opengroup.osdu.core.test.client.model.legal.LegalTagPropertyValues;
+
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.opengroup.osdu.legal.util.AcceptanceBaseTest;
-import org.opengroup.osdu.legal.util.LegalTagUtils;
+public final class GetLegalTagPropertiesApiAcceptanceTests extends LegalAcceptanceTests {
 
-import com.sun.jersey.api.client.ClientResponse;
-
-public final class GetLegalTagPropertiesApiAcceptanceTests extends AcceptanceBaseTest {
-
-	@BeforeEach
-    @Override
-    public void setup() throws Exception {
-        this.legalTagUtils = new LegalTagUtils();
-        super.setup();
-    }
-
-    @AfterEach
-    @Override
-    public void teardown() throws Exception {
-        super.teardown();
-        this.legalTagUtils = null;
-    }
-    
     @Test
-    public void should_returnAllLegalTagProperties_when_getPropertiesApi() throws Exception {
-        ClientResponse response = send("", 200);
-        LegalTagUtils.ReadablePropertyValues result = legalTagUtils.getResult(response, 200,
-                LegalTagUtils.ReadablePropertyValues.class);
+    public void should_returnAllLegalTagProperties_when_getPropertiesApi() {
+        HttpResponse<LegalTagPropertyValues> response = legalTagClient.getProperties();
+        assertJsonResponse(response, HttpStatus.SC_OK);
+        LegalTagPropertyValues result = response.body();
 
-        System.out.println(result);
-        assertTrue(result.countriesOfOrigin.size() > 0);
-        assertTrue(result.countriesOfOrigin.containsKey("US"));
+        assertFalse(result.countriesOfOrigin().isEmpty());
+        assertTrue(result.countriesOfOrigin().containsKey("US"));
 
-        assertTrue(result.otherRelevantDataCountries.size() > 0);
-        assertTrue(result.otherRelevantDataCountries.containsKey("FR"));
+        assertFalse(result.otherRelevantDataCountries().isEmpty());
+        assertTrue(result.otherRelevantDataCountries().containsKey("FR"));
 
-        assertTrue(result.personalDataTypes.size() > 0);
-        assertTrue(result.personalDataTypes.contains("No Personal Data"));
+        assertFalse(result.personalDataTypes().isEmpty());
+        assertTrue(result.personalDataTypes().contains("No Personal Data"));
 
-        assertTrue(result.securityClassifications.size() > 0);
-        assertTrue(result.securityClassifications.contains("Private"));
+        assertFalse(result.securityClassifications().isEmpty());
+        assertTrue(result.securityClassifications().contains("Private"));
 
-        assertTrue(result.exportClassificationControlNumbers.size() > 0);
-        assertTrue(result.exportClassificationControlNumbers.contains("EAR99"));
+        assertFalse(result.exportClassificationControlNumbers().isEmpty());
+        assertTrue(result.exportClassificationControlNumbers().contains("EAR99"));
 
-        assertTrue(result.dataTypes.size() > 0);
-        assertTrue(result.dataTypes.contains("First Party Data"));
-    }
-
-    @Override
-    protected String getBody(){
-        return "";
-    }
-    @Override
-    protected String getApi() {
-        return "legaltags:properties";
-    }
-    @Override
-    protected String getHttpMethod() {
-        return "GET";
+        assertFalse(result.dataTypes().isEmpty());
+        assertTrue(result.dataTypes().contains("First Party Data"));
     }
 }

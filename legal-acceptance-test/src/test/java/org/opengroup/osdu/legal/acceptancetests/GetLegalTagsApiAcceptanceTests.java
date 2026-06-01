@@ -1,104 +1,75 @@
 package org.opengroup.osdu.legal.acceptancetests;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.apache.hc.core5.http.HttpStatus;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.opengroup.osdu.core.test.client.ClientException;
+import org.opengroup.osdu.core.test.client.HttpResponse;
+import org.opengroup.osdu.core.test.client.model.legal.LegalTag;
+import org.opengroup.osdu.core.test.client.model.legal.LegalTagsResponse;
+import org.opengroup.osdu.legal.util.LegalTagUtils;
 
 import java.util.Arrays;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.opengroup.osdu.legal.util.AcceptanceBaseTest;
-import org.opengroup.osdu.legal.util.LegalTagUtils;
-import org.opengroup.osdu.legal.util.TestUtils;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import com.sun.jersey.api.client.ClientResponse;
+public final class GetLegalTagsApiAcceptanceTests extends LegalAcceptanceTests {
 
-public final class GetLegalTagsApiAcceptanceTests extends AcceptanceBaseTest {
-
-    private String name;
-
-    static protected String wellKnownName = LegalTagUtils.getMyDataPartition() + "-" + LegalTagUtils.createRandomNameTenant();
+    private String wellKnownName;
 
     @BeforeEach
-    @Override
-    public void setup() throws Exception {
-        this.legalTagUtils = new LegalTagUtils();
-        super.setup();
-        ClientResponse response = legalTagUtils.create("US", wellKnownName);
-        legalTagUtils.getResult(response, 201, LegalTagUtils.ReadableLegalTag.class);
-    }
-
-    @AfterEach
-    public void teardown() throws Exception {
-        legalTagUtils.delete(wellKnownName);
-        super.teardown();
-        this.legalTagUtils = null;
+    void prepareWellKnownTag() {
+        wellKnownName = name;
+        assertJsonResponse(legalTagClient.create(createLegalTag("US", wellKnownName)), HttpStatus.SC_CREATED);
     }
 
     @Test
-    public void should_return400Error_when_givingInvalidName()throws Exception{
-        name = "invalid*name";
-        validateAccess(400);
+    public void should_return400Error_when_givingInvalidName() {
+        ClientException exception = assertThrows(ClientException.class,
+            () -> legalTagClient.batchRetrieve("invalid*name"));
+        assertEquals(HttpStatus.SC_BAD_REQUEST, exception.getStatusCode());
     }
 
     @Test
-    public void should_return404_when_givenNonExistingName()throws Exception{
-        name = TestUtils.getMyDataPartition() + "-iDoNotExist";
-        validateAccess(404);
+    public void should_return404_when_givenNonExistingName() {
+        ClientException exception = assertThrows(ClientException.class,
+            () -> legalTagClient.batchRetrieve(
+                servicesConfig.getDataPartitionId() + "-iDoNotExist"));
+        assertEquals(HttpStatus.SC_NOT_FOUND, exception.getStatusCode());
     }
 
     @Test
-    public void should_return200_when_userHasApiAccess() throws Exception{
-        name = wellKnownName;
-        validateAccess(200);
+    public void should_return200_when_userHasApiAccess() {
+        assertJsonResponse(legalTagClient.batchRetrieve(wellKnownName), HttpStatus.SC_OK);
     }
 
     @Test
-    public void should_return200onBatchRetrieve_when_userHasApiAccess() throws Exception {
-        String wellKnownName2 = LegalTagUtils.getMyDataPartition() + "-" + LegalTagUtils.createRandomNameTenant();
-        ClientResponse response = legalTagUtils.create("US", wellKnownName2);
-        legalTagUtils.getResult(response, 201, LegalTagUtils.ReadableLegalTag.class);
+    public void should_return200onBatchRetrieve_when_userHasApiAccess() {
+        String wellKnownName2 = LegalTagUtils.createRandomNameTenant(
+            this.getServicesConfig().getDataPartitionId());
+        assertJsonResponse(legalTagClient.create(createLegalTag("US", wellKnownName2)), HttpStatus.SC_CREATED);
 
-        response = legalTagUtils.send("legaltags:batchRetrieve", "POST", legalTagUtils.accessToken(),
-                LegalTagUtils.createRetrieveBatchBody(wellKnownName, wellKnownName2), "");
+        HttpResponse<LegalTagsResponse> batchResponse = legalTagClient.batchRetrieve(
+            wellKnownName, wellKnownName2);
+        assertJsonResponse(batchResponse, HttpStatus.SC_OK);
+        LegalTagsResponse legalTags = batchResponse.body();
+        assertEquals(2, legalTags.legalTags().length);
 
-        LegalTagUtils.ReadableLegalTags legalTags = legalTagUtils.getResult(response, 200, LegalTagUtils.ReadableLegalTags.class);
-        assertEquals(2, legalTags.legalTags.length);
+        LegalTag legalTag = Arrays.stream(legalTags.legalTags())
+            .filter(f -> f.name().equals(wellKnownName)).findFirst().get();
+        assertEquals(wellKnownName, legalTag.name());
+        assertEquals("A1234", legalTag.properties().contractId());
+        assertEquals("US", legalTag.properties().countryOfOrigin().get(0));
+        assertEquals(1, legalTag.properties().countryOfOrigin().size());
+        assertEquals("Transferred Data", legalTag.properties().dataType());
+        assertEquals("EAR99", legalTag.properties().exportClassification());
+        assertEquals("MyCompany", legalTag.properties().originator());
+        assertEquals("No Personal Data", legalTag.properties().personalData());
+        assertEquals("Public", legalTag.properties().securityClassification());
 
-        LegalTagUtils.ReadableLegalTag legalTag = Arrays.stream(legalTags.legalTags).filter(f -> f.name.equals(wellKnownName)).findFirst().get();
-        assertEquals(wellKnownName, legalTag.name);
-        assertEquals("A1234", legalTag.properties.contractId);
-        assertEquals("US", legalTag.properties.countryOfOrigin[0]);
-        assertEquals(1, legalTag.properties.countryOfOrigin.length);
-        assertEquals("Transferred Data", legalTag.properties.dataType);
-        assertEquals("EAR99", legalTag.properties.exportClassification);
-        assertEquals("MyCompany", legalTag.properties.originator);
-        assertEquals("No Personal Data", legalTag.properties.personalData);
-        assertEquals("Public", legalTag.properties.securityClassification);
-
-        LegalTagUtils.ReadableLegalTag legalTag2 = Arrays.stream(legalTags.legalTags).filter(f -> f.name.equals(wellKnownName2)).findFirst().get();
-        assertEquals(wellKnownName2, legalTag2.name);
-        legalTagUtils.delete(wellKnownName2);
-    }
-
-    @Test
-    @Override
-    public void should_return401_when_makingHttpRequestWithoutToken()throws Exception{
-        name = LegalTagUtils.createRandomNameTenant();
-        super.should_return401_when_makingHttpRequestWithoutToken();
-    }
-
-    @Override
-    protected String getBody(){
-        return LegalTagUtils.createRetrieveBatchBody(name);
-    }
-    @Override
-    protected String getApi() {
-        return "legaltags:batchRetrieve";
-    }
-
-    @Override
-    protected String getHttpMethod() {
-        return "POST";
+        LegalTag legalTag2 = Arrays.stream(legalTags.legalTags())
+            .filter(f -> f.name().equals(wellKnownName2)).findFirst().get();
+        assertEquals(wellKnownName2, legalTag2.name());
     }
 }

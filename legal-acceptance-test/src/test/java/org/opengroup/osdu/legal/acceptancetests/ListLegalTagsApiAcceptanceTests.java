@@ -1,81 +1,57 @@
 package org.opengroup.osdu.legal.acceptancetests;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Arrays;
 
-import org.junit.jupiter.api.AfterEach;
+import org.apache.hc.core5.http.HttpStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.opengroup.osdu.legal.util.AcceptanceBaseTest;
-import org.opengroup.osdu.legal.util.LegalTagUtils;
-import org.opengroup.osdu.legal.util.TestUtils;
+import org.opengroup.osdu.core.test.client.HttpResponse;
+import org.opengroup.osdu.core.test.client.model.legal.LegalTag;
+import org.opengroup.osdu.core.test.client.model.legal.LegalTagsResponse;
 
 import com.google.common.base.Strings;
-import com.sun.jersey.api.client.ClientResponse;
 
-public final class ListLegalTagsApiAcceptanceTests extends AcceptanceBaseTest {
+public final class ListLegalTagsApiAcceptanceTests extends LegalAcceptanceTests {
 
-	@BeforeEach
+    @BeforeEach
     @Override
-    public void setup() throws Exception {
-        this.legalTagUtils = new LegalTagUtils();
+    protected void setup() {
         super.setup();
+        assertJsonResponse(legalTagClient.create(createLegalTag("US", name)), HttpStatus.SC_CREATED);
     }
-
-    @AfterEach
-    @Override
-    public void teardown() throws Exception {
-        super.teardown();
-        this.legalTagUtils = null;
-    }
-    
 
     @Test
-    public void should_return200_and_allValidLegalTags_when_sendingValidTrueParameter_And_notSendingValidParameter()throws Exception{
-        ClientResponse response = send("", 200, "?valid=true", TestUtils.getMyDataPartition());
-        LegalTagUtils.ReadableLegalTags result = legalTagUtils.getResult(response, 200, LegalTagUtils.ReadableLegalTags.class);
-        System.out.println("number of lts:" + result.legalTags.length ) ;
-        assertTrue(result.legalTags.length > 0);
-        assertFalse(Strings.isNullOrEmpty(result.legalTags[0].name));
-        assertFalse(Strings.isNullOrEmpty(result.legalTags[0].properties.countryOfOrigin[0]));
+    public void should_return200_and_allValidLegalTags_when_sendingValidTrueParameter_And_notSendingValidParameter() {
+        HttpResponse<LegalTagsResponse> response = legalTagClient.list(true);
+        assertJsonResponse(response, HttpStatus.SC_OK);
+        LegalTagsResponse result = response.body();
+        assertTrue(result.legalTags().length > 0);
+        assertFalse(Strings.isNullOrEmpty(result.legalTags()[0].name()));
+        assertFalse(Strings.isNullOrEmpty(result.legalTags()[0].properties().countryOfOrigin().get(0)));
 
-        ClientResponse response2 = send("", 200, "");
-        LegalTagUtils.ReadableLegalTags result2 = legalTagUtils.getResult(response2, 200, LegalTagUtils.ReadableLegalTags.class);
-        for(LegalTagUtils.ReadableLegalTag tag : result.legalTags){
-            assertTrue(Arrays.stream(result2.legalTags).anyMatch(s -> tag.name.equals(s.name)));
+        HttpResponse<LegalTagsResponse> response2 = legalTagClient.list();
+        assertJsonResponse(response2, HttpStatus.SC_OK);
+        LegalTagsResponse result2 = response2.body();
+        for (LegalTag tag : result.legalTags()) {
+            assertTrue(Arrays.stream(result2.legalTags()).anyMatch(s -> tag.name().equals(s.name())));
         }
     }
 
     @Test
-    public void should_returnDifferentResults_when_sendingValidParameterTrueOrFalse()throws Exception{
-        ClientResponse response = send("", 200, "?valid=true");
-        LegalTagUtils.ReadableLegalTags result = legalTagUtils.getResult(response, 200, LegalTagUtils.ReadableLegalTags.class);
+    public void should_returnDifferentResults_when_sendingValidParameterTrueOrFalse() {
+        HttpResponse<LegalTagsResponse> response = legalTagClient.list(true);
+        assertJsonResponse(response, HttpStatus.SC_OK);
+        LegalTagsResponse result = response.body();
 
-        ClientResponse response2 = send("", 200, "?valid=false");
-        LegalTagUtils.ReadableLegalTags result2 = legalTagUtils.getResult(response2, 200, LegalTagUtils.ReadableLegalTags.class);
-        
-        // Ensure no overlap between valid=true and valid=false results
-        for(LegalTagUtils.ReadableLegalTag tag : result.legalTags){
-            assertFalse(Arrays.stream(result2.legalTags).anyMatch(s -> tag.name.equals(s.name)));
+        HttpResponse<LegalTagsResponse> response2 = legalTagClient.list(false);
+        assertJsonResponse(response2, HttpStatus.SC_OK);
+        LegalTagsResponse result2 = response2.body();
+
+        for (LegalTag tag : result.legalTags()) {
+            assertFalse(Arrays.stream(result2.legalTags()).anyMatch(s -> tag.name().equals(s.name())));
         }
-    }
-
-
-    @Override
-    protected String getBody(){
-        return "";
-    }
-
-    @Override
-    protected String getApi() {
-        return "legaltags";
-    }
-
-    @Override
-    protected String getHttpMethod() {
-        return "GET";
     }
 }

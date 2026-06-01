@@ -1,7 +1,11 @@
 package org.opengroup.osdu.legal.acceptancetests;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.hc.core5.http.HttpStatus;
+import org.junit.jupiter.api.Test;
+import org.opengroup.osdu.core.test.client.ClientException;
+import org.opengroup.osdu.core.test.client.HttpResponse;
+import org.opengroup.osdu.core.test.client.model.legal.LegalTag;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,212 +15,209 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.opengroup.osdu.legal.util.AcceptanceBaseTest;
-import org.opengroup.osdu.legal.util.LegalTagUtils;
-import org.opengroup.osdu.legal.util.TestUtils;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.sun.jersey.api.client.ClientResponse;
+@Slf4j
+public final class CreateLegalTagApiAcceptanceTests extends LegalAcceptanceTests {
 
-public final class CreateLegalTagApiAcceptanceTests extends AcceptanceBaseTest {
+    private static final String INVALID_COUNTRY_OF_ORIGIN_MESSAGE =
+        "Invalid country of origin set. It should match one of the ISO alpha 2 codes and be a country with no restriction on data residency. Found: [%s].";
 
-    private String name = LegalTagUtils.createRandomNameTenant();
-    private String COO = "";
-
-    @BeforeEach
-    @Override
-    public void setup() throws Exception {
-        this.legalTagUtils = new LegalTagUtils();
-        COO = "US";
-        super.setup();
-    }
-
-    @AfterEach
-    @Override
-    public void teardown() throws Exception {
-        legalTagUtils.delete(name);
-        super.teardown();
-        this.legalTagUtils = null;
+    @Test
+    public void should_returnCreated_when_userHasApiAccess() {
+        HttpResponse<LegalTag> response = legalTagClient.create(createLegalTag("US", name));
+        assertJsonResponse(response, HttpStatus.SC_CREATED);
     }
 
     @Test
-    public void should_returnCreated_when_userHasApiAccess() throws Exception{
-        validateAccess(201);
+    public void should_return400_when_userHasApiAccess_ButSendsEmbargoedCOO() {
+        ClientException exception = expectClientError(
+            () -> legalTagClient.create(createLegalTag("SD", name)));
+        assertEquals(HttpStatus.SC_BAD_REQUEST, exception.getStatusCode());
+        assertEquals(validationError(String.format(INVALID_COUNTRY_OF_ORIGIN_MESSAGE, "SD")),
+            exception.getError());
     }
 
     @Test
-    public void should_return400_when_userHasApiAccess_ButSendsEmbargoedCOO() throws Exception{
-        COO = "SD";
-        ClientResponse response = validateAccess(400);
-        String messageResponse = legalTagUtils.getResult(response, 400, String.class);
-        assertEquals("{\"code\":400,\"reason\":\"Validation error.\",\"message\":\"{\\\"errors\\\":[\\\"Invalid country of origin set. It should match one of the ISO alpha 2 codes and be a country with no restriction on data residency. Found: [SD].\\\"]}\"}" , messageResponse);
+    public void should_notAllowCreationOfLegalTag_when_countryOfOriginIsSetToARestrictedCountry() {
+        // BV has residency risk "Default" but is allowed for "Transferred Data" only (see DefaultCountryCode.json).
+        ClientException exception = expectClientError(
+            () -> legalTagClient.create(createLegalTag("BV", name, "First Party Data")));
+        assertEquals(HttpStatus.SC_BAD_REQUEST, exception.getStatusCode());
+        assertEquals(validationError(String.format(INVALID_COUNTRY_OF_ORIGIN_MESSAGE, "BV")),
+            exception.getError());
     }
 
     @Test
-    public void should_notAllowCreationOfLegalTag_when_countryOfOriginIsSetToARestrictedCountry() throws Exception {
-        COO = "BV";
-        ClientResponse response = validateAccess(400);
-        String messageResponse = legalTagUtils.getResult(response, 400, String.class);
-        assertEquals("{\"code\":400,\"reason\":\"Validation error.\",\"message\":\"{\\\"errors\\\":[\\\"Invalid country of origin set. It should match one of the ISO alpha 2 codes and be a country with no restriction on data residency. Found: [BV].\\\"]}\"}", messageResponse);
+    public void should_return400_when_givenEmptyBody() {
+        ClientException exception = expectClientError(() -> legalTagClient.create(emptyLegalTag()));
+        assertEquals(HttpStatus.SC_BAD_REQUEST, exception.getStatusCode());
     }
 
     @Test
-    public void should_return400_when_givenEmptyBody() throws Exception{
-        ClientResponse response = legalTagUtils.send(this.getApi(), this.getHttpMethod(), legalTagUtils.accessToken(), "{}", getQuery());
-        assertEquals(400, response.getStatus());
+    public void should_allowCreationOfLegalTag_when_3rdPArtyDataHasAValidExpirationDate() {
+        ClientException exception = expectClientError(
+            () -> legalTagClient.create(createLegalTag("US", name, null, "Third Party Data",
+                "Acceptance test legal tag")));
+        assertEquals(HttpStatus.SC_BAD_REQUEST, exception.getStatusCode());
+        assertEquals(validationError("You need to set an expiration date and contract ID."),
+            exception.getError());
+        HttpResponse<LegalTag> response = legalTagClient.create(
+            createLegalTag("US", name, "2099-12-25", "Third Party Data"));
+        assertJsonResponse(response, HttpStatus.SC_CREATED);
     }
 
     @Test
-    public void should_allowCreationOfLegalTag_when_3rdPArtyDataHasAValidExpirationDate() throws Exception {
-        ClientResponse response = legalTagUtils.create("US", name, "", "Third Party Data");
-        String messageResponse = legalTagUtils.getResult(response, 400, String.class);
-        assertTrue(messageResponse.indexOf("You need to set an expiration date and contract ID") >= 0);
-        response = legalTagUtils.create("US", name, "2099-12-25", "Third Party Data");
-        legalTagUtils.getResult(response, 201, String.class);
+    public void should_createLegalTag_with_descriptionNotSupplied() {
+        HttpResponse<LegalTag> response = legalTagClient.create(
+            createLegalTag("US", name, "2029-12-12", "Transferred Data", null));
+        assertJsonResponse(response, HttpStatus.SC_CREATED);
     }
 
     @Test
-    public void should_createLegalTag_with_descriptionNotSupplied() throws Exception{
-        ClientResponse response = legalTagUtils.create("US", name, "2029-12-12", "Transferred Data", TestUtils.getMyDataPartition(), null);
-        legalTagUtils.getResult(response, 201, LegalTagUtils.ReadableLegalTag.class);
+    public void should_createLegalTag_when_expDateNotSupplied_and_dataTypeIsTransferred() {
+        HttpResponse<LegalTag> response = legalTagClient.create(
+            createLegalTag("US", name, null, "Transferred Data", "my desc"));
+        assertJsonResponse(response, HttpStatus.SC_CREATED);
+        LegalTag lt = response.body();
+        assertEquals(name, lt.name());
+        assertTrue(lt.name().contains(servicesConfig.getDataPartitionId()));
     }
 
     @Test
-    public void should_createLegalTag_when_expDateNotSupplied_and_dataTypeIsTranferred() throws Exception{
-        ClientResponse response = legalTagUtils.create("US", name, null, "Transferred Data", TestUtils.getMyDataPartition(), "my desc");
-        LegalTagUtils.ReadableLegalTag lt =legalTagUtils.getResult(response, 201, LegalTagUtils.ReadableLegalTag.class);
-        assertEquals(name, lt.name);
-        assertTrue(lt.name.contains(TestUtils.getMyDataPartition()));
+    public void should_allowCreationOfALegalTag_when_countryOfOriginIsSetToAnUnrestrictedCountry_andThen_notAllowCreationOfARecordWithTheSameKind() {
+        HttpResponse<LegalTag> createResponse = legalTagClient.create(createLegalTag("US", name));
+        assertJsonResponse(createResponse, HttpStatus.SC_CREATED);
+        assertEquals(name, createResponse.body().name());
+
+        ClientException exception = expectClientError(
+            () -> legalTagClient.create(createLegalTag("US", name, "2099-12-25",
+                "Transferred Data", "Acceptance test legal tag")));
+        assertEquals(HttpStatus.SC_CONFLICT, exception.getStatusCode());
+        assertTrue(exception.getError().getMessage()
+            .contains("A LegalTag already exists for the given name"));
     }
 
     @Test
-    public void should_allowCreationOfALegalTag_when_countryOfOriginIsSetToAnUnrestrictedCountry_andThen_notAllowCreationOfARecordWithTheSameKind() throws Exception {
-        ClientResponse response = legalTagUtils.create("US", name);
-        LegalTagUtils.ReadableLegalTag readableLegalTags = legalTagUtils.getResult(response, 201, LegalTagUtils.ReadableLegalTag.class);
-        assertEquals(name, readableLegalTags.name);
-
-        response = legalTagUtils.create("US", name);
-        String error = legalTagUtils.getResult(response, 409, String.class);
-        assertTrue(error.contains("\"message\":\"A LegalTag already exists for the given name"));
+    public void should_return400_CreationOfALegalTag_when_countryOfOriginIsSetToDefaultResidencyRiskCountry_andThen_None_ofThe_Datatype_is_excluded_from_DataResidency() {
+        ClientException exception = expectClientError(
+            () -> legalTagClient.create(createLegalTag("MX", name, "2099-12-25",
+                "Transferred Data", "Acceptance test legal tag")));
+        assertEquals(HttpStatus.SC_BAD_REQUEST, exception.getStatusCode());
+        assertEquals(validationError(String.format(INVALID_COUNTRY_OF_ORIGIN_MESSAGE, "MX")),
+            exception.getError());
     }
 
     @Test
-    public void should_return400_CreationOfALegalTag_when_countryOfOriginIsSetToDefaultResidencyRiskCountry_andThen_None_ofThe_Datatype_is_exluded_from_Dataresidency() throws Exception {
-        ClientResponse response = legalTagUtils.create("MX", name);
-        String messageResponse = legalTagUtils.getResult(response, 400, String.class);
-        assertEquals("{\"code\":400,\"reason\":\"Validation error.\",\"message\":\"{\\\"errors\\\":[\\\"Invalid country of origin set. It should match one of the ISO alpha 2 codes and be a country with no restriction on data residency. Found: [MX].\\\"]}\"}", messageResponse);
+    public void should_allowCreationOfALegalTag_when_countryOfOriginIsSetToDefaultResidencyRiskCountry_andThen_input_Datatype_is_excluded_from_DataResidency() {
+        HttpResponse<LegalTag> response = legalTagClient.create(
+            createLegalTag("GG", name, "Transferred Data"));
+        assertJsonResponse(response, HttpStatus.SC_CREATED);
+        assertEquals(name, response.body().name());
+        assertEquals("Transferred Data", response.body().properties().dataType());
     }
 
     @Test
-    public void should_allowCreationOfALegalTag_when_countryOfOriginIsSetToDefaultResidencyRiskCountry_andThen_input_Datatype_is_exluded_from_Dataresidency() throws Exception {
-        ClientResponse response = legalTagUtils.create("GG", name,"Transferred Data");
-        LegalTagUtils.ReadableLegalTag readableLegalTags = legalTagUtils.getResult(response, 201, LegalTagUtils.ReadableLegalTag.class);
-        assertEquals(name, readableLegalTags.name);
-        assertEquals("Transferred Data", readableLegalTags.properties.dataType);
-    }
-    @Test
-    public void should_allowCreationOfALegalTag_when_countryOfOriginIsSetToNoRestrictionCountry_andThen_input_Datatype_is_not_exluded_from_Dataresidency() throws Exception {
-        ClientResponse response = legalTagUtils.create("TH", name, "First Party Data");
-        LegalTagUtils.ReadableLegalTag readableLegalTags = legalTagUtils.getResult(response, 201, LegalTagUtils.ReadableLegalTag.class);
-        assertEquals(name, readableLegalTags.name);
-        assertEquals("First Party Data", readableLegalTags.properties.dataType);
-    }
-    @Test
-    public void should_allowCreationOfALegalTag_when_countryOfOriginIsSetToNoRestrictionCountry_andThen_input_Datatype_is_exluded_from_Dataresidency() throws Exception {
-        ClientResponse response = legalTagUtils.create("JP", name, "Transferred Data");
-        LegalTagUtils.ReadableLegalTag readableLegalTags = legalTagUtils.getResult(response, 201, LegalTagUtils.ReadableLegalTag.class);
-        assertEquals(name, readableLegalTags.name);
-        assertEquals("Transferred Data", readableLegalTags.properties.dataType);
-    }
-    @Test
-    public void should_allowCreationOfALegalTag_when_countryOfOriginIsSetToNotAssignedCountry_andThen_input_Datatype_is_not_exluded_from_Dataresidency() throws Exception {
-        ClientResponse response = legalTagUtils.create("JP", name, "First Party Data");
-        LegalTagUtils.ReadableLegalTag readableLegalTags = legalTagUtils.getResult(response, 201, LegalTagUtils.ReadableLegalTag.class);
-        assertEquals(name, readableLegalTags.name);
-        assertEquals("First Party Data", readableLegalTags.properties.dataType);
-    }
-    @Test
-    public void should_allowCreationOfALegalTag_when_countryOfOriginIsSetToNotAssignedCountry_andThen_input__is_exluded_from_Dataresidency() throws Exception {
-        ClientResponse response = legalTagUtils.create("TH", name, "Transferred Data");
-        LegalTagUtils.ReadableLegalTag readableLegalTags = legalTagUtils.getResult(response, 201, LegalTagUtils.ReadableLegalTag.class);
-        assertEquals(name, readableLegalTags.name);
-        assertEquals("Transferred Data", readableLegalTags.properties.dataType);
-    }
-
-    // following two tests prove the older version config file in tenant would also work
-    @Test
-    public void should_allowCreationOfALegalTag_When_countryOfOriginIsSetToClientConsentRequiredInTenant_andDataTypeIsTransferredData() throws Exception{
-        //legalTagUtils.uploadTenantTestingConfigFile();
-        ClientResponse response = legalTagUtils.create("MY", name, "Transferred Data");
-        LegalTagUtils.ReadableLegalTag readableLegalTags = legalTagUtils.getResult(response, 201, LegalTagUtils.ReadableLegalTag.class);
-        assertEquals(name, readableLegalTags.name);
-        assertEquals("Transferred Data", readableLegalTags.properties.dataType);
+    public void should_allowCreationOfALegalTag_when_countryOfOriginIsSetToNoRestrictionCountry_andThen_input_Datatype_is_not_excluded_from_DataResidency() {
+        HttpResponse<LegalTag> response = legalTagClient.create(
+            createLegalTag("TH", name, "First Party Data"));
+        assertJsonResponse(response, HttpStatus.SC_CREATED);
+        assertEquals(name, response.body().name());
+        assertEquals("First Party Data", response.body().properties().dataType());
     }
 
     @Test
-    public void should_allowCreationOfALegalTag_When_countryOfOriginIsSetToClientConsentRequiredInTenant_andDataTypeIsFirstPartyData() throws Exception{
-        //legalTagUtils.uploadTenantTestingConfigFile();
-        ClientResponse response = legalTagUtils.create("US", name, "First Party Data");
-        LegalTagUtils.ReadableLegalTag readableLegalTags = legalTagUtils.getResult(response, 201, LegalTagUtils.ReadableLegalTag.class);
-        
-        System.out.println(">>>" + readableLegalTags.name);
-        System.out.println(">>>" + readableLegalTags.properties.dataType);
-        
-        assertEquals(name, readableLegalTags.name);
-        assertEquals("First Party Data", readableLegalTags.properties.dataType);
+    public void should_allowCreationOfALegalTag_when_countryOfOriginIsSetToNoRestrictionCountry_andThen_input_Datatype_is_excluded_from_DataResidency() {
+        HttpResponse<LegalTag> response = legalTagClient.create(
+            createLegalTag("JP", name, "Transferred Data"));
+        assertJsonResponse(response, HttpStatus.SC_CREATED);
+        assertEquals(name, response.body().name());
+        assertEquals("Transferred Data", response.body().properties().dataType());
     }
 
     @Test
-    public void should_return400_CreationOfALegalTag_when_countryOfOriginIsSetToEmbargoCountry_andThen_input_Datatype_is_exluded_from_Dataresidency() throws Exception {
-        ClientResponse response = legalTagUtils.create("IR", name, "Transferred Data");
-        String messageResponse = legalTagUtils.getResult(response, 400, String.class);
-        assertEquals("{\"code\":400,\"reason\":\"Validation error.\",\"message\":\"{\\\"errors\\\":[\\\"Invalid country of origin set. It should match one of the ISO alpha 2 codes and be a country with no restriction on data residency. Found: [IR].\\\"]}\"}", messageResponse);
+    public void should_allowCreationOfALegalTag_when_countryOfOriginIsSetToNotAssignedCountry_andThen_input_Datatype_is_not_excluded_from_DataResidency() {
+        HttpResponse<LegalTag> response = legalTagClient.create(
+            createLegalTag("JP", name, "First Party Data"));
+        assertJsonResponse(response, HttpStatus.SC_CREATED);
+        assertEquals(name, response.body().name());
+        assertEquals("First Party Data", response.body().properties().dataType());
     }
+
     @Test
-    public void should_onlyLetAMaximumOf1LegaltagBeCreated_when_tryingToCreateMultipleVersionsOfTheSameContractAtTheSameTime() throws Exception {
+    public void should_allowCreationOfALegalTag_when_countryOfOriginIsSetToNotAssignedCountry_andThen_input_is_excluded_from_DataResidency() {
+        HttpResponse<LegalTag> response = legalTagClient.create(
+            createLegalTag("TH", name, "Transferred Data"));
+        assertJsonResponse(response, HttpStatus.SC_CREATED);
+        assertEquals(name, response.body().name());
+        assertEquals("Transferred Data", response.body().properties().dataType());
+    }
+
+    @Test
+    public void should_allowCreationOfALegalTag_When_countryOfOriginIsSetToClientConsentRequiredInTenant_andDataTypeIsTransferredData() {
+        HttpResponse<LegalTag> response = legalTagClient.create(
+            createLegalTag("MY", name, "Transferred Data"));
+        assertJsonResponse(response, HttpStatus.SC_CREATED);
+        assertEquals(name, response.body().name());
+        assertEquals("Transferred Data", response.body().properties().dataType());
+    }
+
+    @Test
+    public void should_allowCreationOfALegalTag_When_countryOfOriginIsSetToClientConsentRequiredInTenant_andDataTypeIsFirstPartyData() {
+        HttpResponse<LegalTag> response = legalTagClient.create(
+            createLegalTag("US", name, "First Party Data"));
+        assertJsonResponse(response, HttpStatus.SC_CREATED);
+
+        log.info(">>> {}", response.body().name());
+        log.info(">>> {}", response.body().properties().dataType());
+
+        assertEquals(name, response.body().name());
+        assertEquals("First Party Data", response.body().properties().dataType());
+    }
+
+    @Test
+    public void should_return400_CreationOfALegalTag_when_countryOfOriginIsSetToEmbargoCountry_andThen_input_Datatype_is_excluded_from_DataResidency() {
+        ClientException exception = expectClientError(
+            () -> legalTagClient.create(createLegalTag("IR", name, "2099-12-25",
+                "Transferred Data", "Acceptance test legal tag")));
+        assertEquals(HttpStatus.SC_BAD_REQUEST, exception.getStatusCode());
+        assertEquals(validationError(String.format(INVALID_COUNTRY_OF_ORIGIN_MESSAGE, "IR")),
+            exception.getError());
+    }
+
+    @Test
+    public void should_onlyLetAMaximumOf1LegalTagBeCreated_when_tryingToCreateMultipleVersionsOfTheSameContractAtTheSameTime() throws Exception {
         ExecutorService executor = Executors.newFixedThreadPool(10);
-        List<Callable<ClientResponse>> tasks = new ArrayList<>();
-
+        List<Callable<Integer>> tasks = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
-            Callable<ClientResponse> task = () -> {
-                try {
-                    return legalTagUtils.create(name);
-                } catch (Exception ex) {
-                    return null;
-                }
-            };
-            tasks.add(task);
+            tasks.add(() -> createStatusCode(name));
         }
 
-        List<Future<ClientResponse>> responses = executor.invokeAll(tasks);
+        List<Future<Integer>> responses = executor.invokeAll(tasks);
         executor.shutdown();
-        executor.awaitTermination(20, TimeUnit.SECONDS);
+        assertTrue(executor.awaitTermination(20, TimeUnit.SECONDS));
 
-        int sucessResponseCount = 0;
+        int successResponseCount = 0;
         int non409ErrorResponseCount = 0;
-        for (Future<ClientResponse> future : responses) {
-            if (future.get().getStatus() == 201)
-                sucessResponseCount++;
-            else if (future.get().getStatus() != 409)
+        for (Future<Integer> future : responses) {
+            int statusCode = future.get();
+            if (statusCode == HttpStatus.SC_CREATED) {
+                successResponseCount++;
+            } else if (statusCode != HttpStatus.SC_CONFLICT) {
                 non409ErrorResponseCount++;
+            }
         }
 
-        assertTrue( sucessResponseCount <= 1 , "Expected 1 successful response. Actual " + sucessResponseCount);
+        assertTrue(successResponseCount <= 1, "Expected 1 successful response. Actual " + successResponseCount);
         assertEquals(0, non409ErrorResponseCount);
     }
 
-    @Override
-    protected String getBody(){
-        return LegalTagUtils.getBody(COO, name);
-    }
-    @Override
-    protected String getApi() {
-        return "legaltags";
-    }
-    @Override
-    protected String getHttpMethod() {
-        return "POST";
+    private int createStatusCode(String legalTagName) {
+        try {
+            return legalTagClient.create(createLegalTag(legalTagName)).statusCode();
+        } catch (ClientException exception) {
+            return exception.getStatusCode();
+        }
     }
 }
