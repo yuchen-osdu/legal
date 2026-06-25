@@ -13,24 +13,6 @@
 	<name>legal-core</name>
 	<description>Legal service core</description>
 
-	<properties>
-		<jackson.version>2.21.1</jackson.version>
-	</properties>
-
-	<dependencyManagement>
-		<dependencies>
-			<!-- Jackson override: Spring Boot 3.5.9 and other artifacts provides 2.19.4, we need 2.21.1 for GHSA-72hv-8253-57qq -->
-			<!-- Maybe remove this override when Spring Boot BOM updates to Jackson >= 2.21.1 -->
-			<dependency>
-				<groupId>com.fasterxml.jackson</groupId>
-				<artifactId>jackson-bom</artifactId>
-				<version>${jackson.version}</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
-
 	<dependencies>
 		<dependency>
 			<groupId>org.opengroup.osdu</groupId>
@@ -122,41 +104,21 @@
 			<scope>test</scope>
 		</dependency>
 
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter</artifactId>
+			<scope>test</scope>
+		</dependency>
+
 		<!-- Test Dependencies -->
 		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.13.2</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.junit.vintage</groupId>
-			<artifactId>junit-vintage-engine</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.powermock</groupId>
-			<artifactId>powermock-api-mockito2</artifactId>
-			<version>2.0.2</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.powermock</groupId>
-			<artifactId>powermock-module-junit4</artifactId>
-			<version>2.0.2</version>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-core</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.mockito</groupId>
-			<artifactId>mockito-core</artifactId>
-			<version>3.0.0</version>
-			<scope>test</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>com.github.stefanbirkner</groupId>
-			<artifactId>system-rules</artifactId>
-			<version>1.19.0</version>
+			<artifactId>mockito-junit-jupiter</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -167,7 +129,7 @@
         <dependency>
             <groupId>io.lettuce</groupId>
             <artifactId>lettuce-core</artifactId>
-			<version>6.8.1.RELEASE</version>
+			<version>${lettuce.version}</version>
         </dependency>
 
     </dependencies>
@@ -177,7 +139,6 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
-				<version>3.2.5</version>
 				<configuration>
 					<argLine>@{jacocoArgLine} --add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.util=ALL-UNNAMED</argLine>
 					<useSystemClassLoader>false</useSystemClassLoader>
@@ -187,7 +148,6 @@
 			<plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.14</version>
 				<configuration>
 					<!-- Sets the VM argument line used when unit tests are run. -->
 					<propertyName>jacocoArgLine</propertyName>

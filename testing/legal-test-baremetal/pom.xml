@@ -10,8 +10,6 @@
     <artifactId>legal-test-baremetal</artifactId>
 
     <properties>
-        <maven.compiler.target>17</maven.compiler.target>
-        <maven.compiler.source>17</maven.compiler.source>
     </properties>
 
     <dependencies>
@@ -44,7 +42,11 @@
         <dependency>
             <groupId>org.opengroup.osdu</groupId>
             <artifactId>os-core-common</artifactId>
-            <version>0.25.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 

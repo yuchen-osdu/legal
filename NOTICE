@@ -144,8 +144,6 @@ The following software have components provided under the terms of this license:
 - Java Native Access Platform (from https://github.com/java-native-access/jna)
 - Javassist (from http://www.javassist.org/, https://www.javassist.org/)
 - JetBrains Java Annotations (from https://github.com/JetBrains/java-annotations)
-- Jetty :: Utilities (from http://jetty.mortbay.org, http://www.eclipse.org/jetty, https://repo1.maven.org/maven2/org/eclipse/jetty/jetty-util, https://repo1.maven.org/maven2/org/mortbay/jetty/jetty-util)
-- Jetty Server (from http://jetty.mortbay.org, http://www.eclipse.org/jetty, https://repo1.maven.org/maven2/org/mortbay/jetty/jetty)
 - Joda-Time (from http://joda-time.sourceforge.net, http://www.joda.org/joda-time/, https://www.joda.org/joda-time/)
 - Kotlin Stdlib (from https://kotlinlang.org/, https://repo1.maven.org/maven2/org/jetbrains/kotlin/kotlin-stdlib)
 - Kotlin Stdlib Common (from https://kotlinlang.org/)
@@ -162,6 +160,8 @@ The following software have components provided under the terms of this license:
 - Netty Reactive Streams Implementation (from https://repo1.maven.org/maven2/com/typesafe/netty/netty-reactive-streams)
 - Netty/Buffer (from http://netty.io/, https://repo1.maven.org/maven2/io/netty/netty-buffer)
 - Netty/Codec (from http://netty.io/, https://repo1.maven.org/maven2/io/netty/netty-codec)
+- Netty/Codec/Base (from https://netty.io/)
+- Netty/Codec/Compression (from https://netty.io/)
 - Netty/Codec/DNS (from http://netty.io/, https://repo1.maven.org/maven2/io/netty/netty-codec-dns)
 - Netty/Codec/HTTP (from http://netty.io/, https://repo1.maven.org/maven2/io/netty/netty-codec-http)
 - Netty/Codec/HTTP2 (from http://netty.io/, https://repo1.maven.org/maven2/io/netty/netty-codec-http2)
@@ -197,7 +197,6 @@ The following software have components provided under the terms of this license:
 - Redisson (from http://redisson.org, https://redisson.pro/)
 - Retrofit (from https://github.com/square/retrofit, https://repo1.maven.org/maven2/com/squareup/retrofit2/retrofit)
 - RxJava (from https://github.com/ReactiveX/RxJava)
-- Servlet API (from https://repo1.maven.org/maven2/org/mortbay/jetty/servlet-api)
 - Smithy :: Dafny :: Conversion (from https://github.com/smithy-lang/smithy)
 - SnakeYAML (from http://code.google.com/p/snakeyaml/, http://www.snakeyaml.org, https://bitbucket.org/snakeyaml/snakeyaml)
 - Spring AOP (from http://www.springframework.org, https://github.com/spring-projects/spring-framework, https://repo1.maven.org/maven2/org/springframework/spring-aop)
@@ -381,8 +380,6 @@ EPL-1.0
 ========================================================================
 The following software have components provided under the terms of this license:
 
-- JUnit Vintage Engine (from http://junit.org/junit5/, https://junit.org/junit5/)
-- Jetty :: Utilities (from http://jetty.mortbay.org, http://www.eclipse.org/jetty, https://repo1.maven.org/maven2/org/eclipse/jetty/jetty-util, https://repo1.maven.org/maven2/org/mortbay/jetty/jetty-util)
 - Logback Contrib :: JSON :: Classic (from https://repo1.maven.org/maven2/ch/qos/logback/contrib/logback-json-classic)
 - Logback Contrib :: JSON :: Core (from https://repo1.maven.org/maven2/ch/qos/logback/contrib/logback-json-core)
 - Logback Contrib :: Jackson (from https://repo1.maven.org/maven2/ch/qos/logback/contrib/logback-jackson)
@@ -401,7 +398,6 @@ The following software have components provided under the terms of this license:
 - JUnit Platform Commons (from http://junit.org/junit5/, https://junit.org/junit5/)
 - JUnit Platform Engine API (from http://junit.org/junit5/, https://junit.org/junit5/)
 - JUnit Platform Launcher (from https://junit.org/)
-- JUnit Vintage Engine (from http://junit.org/junit5/, https://junit.org/junit5/)
 - Jakarta Activation API (from https://github.com/eclipse-ee4j/jaf, https://github.com/jakartaee/jaf-api, https://repo1.maven.org/maven2/jakarta/activation/jakarta.activation-api)
 - Jakarta Annotations API (from https://projects.eclipse.org/projects/ee4j.ca)
 - Jakarta Dependency Injection (from https://github.com/eclipse-ee4j/injection-api)
@@ -551,6 +547,7 @@ The following software have components provided under the terms of this license:
 
 - Guava: Google Core Libraries for Java (from http://code.google.com/p/guava-libraries, https://github.com/google/guava, https://repo1.maven.org/maven2/com/google/guava/guava)
 - Netty/Codec (from http://netty.io/, https://repo1.maven.org/maven2/io/netty/netty-codec)
+- Netty/Codec/Base (from https://netty.io/)
 
 ========================================================================
 gpl-2.0-classpath

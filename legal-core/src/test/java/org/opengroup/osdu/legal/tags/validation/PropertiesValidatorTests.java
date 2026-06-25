@@ -5,8 +5,8 @@ import org.opengroup.osdu.legal.InvalidCooRule;
 import org.opengroup.osdu.legal.MockRule;
 import org.opengroup.osdu.core.common.model.legal.DataTypeValues;
 import org.opengroup.osdu.core.common.model.legal.Properties;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import jakarta.validation.ConstraintValidatorContext;
 
@@ -17,9 +17,9 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import static junit.framework.TestCase.assertTrue;
-import static org.junit.Assert.assertFalse;
-import static org.mockito.Matchers.any;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -28,7 +28,7 @@ public class PropertiesValidatorTests {
     PropertiesValidator sut;
     static ConstraintValidatorContext context;
 
-    @BeforeClass
+    @BeforeAll
     public static void setupClass(){
         context = mock(ConstraintValidatorContext.class);
         when(context.buildConstraintViolationWithTemplate(any())).thenReturn(mock(ConstraintValidatorContext.ConstraintViolationBuilder.class));

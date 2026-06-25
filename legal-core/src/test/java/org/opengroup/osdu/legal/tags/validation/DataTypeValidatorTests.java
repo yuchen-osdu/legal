@@ -4,19 +4,23 @@ import org.opengroup.osdu.core.common.model.legal.validation.DataTypeValidator;
 import org.opengroup.osdu.core.common.model.tenant.TenantInfo;
 import org.opengroup.osdu.core.common.model.legal.DataTypeValues;
 import org.opengroup.osdu.core.common.model.http.RequestInfo;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.mockito.junit.MockitoJUnitRunner;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
+
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public class DataTypeValidatorTests {
 
     @Mock
@@ -25,9 +29,8 @@ public class DataTypeValidatorTests {
     @InjectMocks
     DataTypeValidator sut;
 
-    @Before
+    @BeforeEach
     public void setup(){
-        MockitoAnnotations.initMocks(this);
         when(requestInfo.getComplianceRuleSet()).thenReturn(TenantInfo.ComplianceRuleSets.SHARED);
     }
 

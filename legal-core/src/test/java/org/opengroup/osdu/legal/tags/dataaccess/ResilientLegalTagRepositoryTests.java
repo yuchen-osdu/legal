@@ -7,16 +7,16 @@ import org.opengroup.osdu.core.common.model.legal.PersistenceException;
 import org.opengroup.osdu.legal.provider.interfaces.ILegalTagRepository;
 import org.opengroup.osdu.core.common.model.legal.LegalTag;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 public class ResilientLegalTagRepositoryTests {

@@ -9,23 +9,23 @@ import org.opengroup.osdu.legal.MockRule;
 import org.opengroup.osdu.legal.MockValidationValidator;
 
 import org.opengroup.osdu.legal.tags.validation.rules.DefaultRule;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.*;
 
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
 
-import static junit.framework.TestCase.assertEquals;
-import static junit.framework.TestCase.assertTrue;
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 public class PropertiesTests {
 
     private Validator validator;
 
-    @Before
+    @BeforeEach
     public void setup() {
         validator = MockValidationValidator.GetValidator();
     }

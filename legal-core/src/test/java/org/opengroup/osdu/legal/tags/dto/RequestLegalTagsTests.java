@@ -1,7 +1,7 @@
 package org.opengroup.osdu.legal.tags.dto;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
@@ -11,13 +11,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import static junit.framework.TestCase.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class RequestLegalTagsTests {
 
     private static Validator validator;
 
-    @BeforeClass
+    @BeforeAll
     public static void setup() {
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();

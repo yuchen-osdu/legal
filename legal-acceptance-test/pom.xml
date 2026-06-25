@@ -10,12 +10,11 @@
 
 	<properties>
 		<java.version>17</java.version>
-		<maven.compiler.target>${java.version}</maven.compiler.target>
-		<maven.compiler.source>${java.version}</maven.compiler.source>
+		<maven.compiler.release>${java.version}</maven.compiler.release>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.main.basedir>${project.basedir}</project.main.basedir>
-		<os-core-test.version>0.1.6</os-core-test.version>
-		<lombok.version>1.18.28</lombok.version>
+		<os-core-test.version>0.2.0</os-core-test.version>
+		<lombok.version>1.18.42</lombok.version>
 		<maven-surefire-plugin.version>3.2.5</maven-surefire-plugin.version>
 		<argLine>
 			--add-opens java.base/java.lang=ALL-UNNAMED
@@ -38,6 +37,11 @@
 
 	<build>
 		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.13.0</version>
+			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
