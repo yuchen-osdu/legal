@@ -3,23 +3,27 @@ package org.opengroup.osdu.legal.countries;
 import org.opengroup.osdu.core.common.model.tenant.TenantInfo;
 import org.opengroup.osdu.core.common.model.http.RequestInfo;
 import org.opengroup.osdu.core.common.model.legal.ServiceConfig;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.powermock.modules.junit4.PowerMockRunner;
-import org.powermock.reflect.Whitebox;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static org.mockito.Matchers.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-@RunWith(PowerMockRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public class LegalTagCountriesServiceTests {
 
     private List<Country> listOfCountries;
@@ -45,7 +49,7 @@ public class LegalTagCountriesServiceTests {
     @Mock
     private DefaultCountriesRepository defaultCountriesRepository;
 
-    @Before
+    @BeforeEach
     public void setup() throws Exception {
         DefaultCountriesRepository defaultCountriesRepository = new DefaultCountriesRepository();
         this.listOfCountries = defaultCountriesRepository.read();
@@ -53,32 +57,32 @@ public class LegalTagCountriesServiceTests {
         when(this.legalTagCountriesRepository.read()).thenReturn(this.listOfCountries);
         when(this.requestInfo.getTenantInfo()).thenReturn(this.tenantInfo);
         when(this.defaultCountriesRepository.read()).thenReturn(this.listOfCountries);
-        Whitebox.invokeMethod(sut, "setup");
+        ReflectionTestUtils.invokeMethod(sut, "setup");
     }
 
     @Test
     public void should_returnTransferredDataAllowedCountriesToValidCoo() {
         Map<String, String> validCoos = this.sut.getValidCOOs("Transferred Data");
-        Assert.assertEquals(224, validCoos.size());
+        Assertions.assertEquals(224, validCoos.size());
     }
 
     @Test
     public void should_returnNormalValidCoo_withoutSpecialDataType() {
         Map<String, String> validCoos = this.sut.getValidCOOs("Public Domain Data");
-        Assert.assertEquals(59, validCoos.size());
+        Assertions.assertEquals(59, validCoos.size());
     }
 
     @Test
     public void should_returnSameNumberOfCoo_withOrWithoutProvidingNoneSpecialDataType() {
         Map<String, String> validCoos = this.sut.getValidCOOs("Public Domain Data");
         Map<String, String> validCoosWithOutDataType = this.sut.getValidCOOs();
-        Assert.assertEquals(true, validCoos.size() == validCoosWithOutDataType.size());
+        Assertions.assertEquals(true, validCoos.size() == validCoosWithOutDataType.size());
     }
 
     @Test
     public void should_returnEmbargoedCountriesAsORDCCountries() {
         Map<String, String> validCoos = this.sut.getValidORDCs();
-        Assert.assertEquals(238, validCoos.size());
+        Assertions.assertEquals(238, validCoos.size());
     }
 
     @Test
@@ -92,7 +96,7 @@ public class LegalTagCountriesServiceTests {
             }
         }
         Map<String, String> validCoos = this.sut.getValidCOOs("Public Domain Data");
-        Assert.assertEquals(60, validCoos.size());
+        Assertions.assertEquals(60, validCoos.size());
     }
 
     @Test
@@ -105,6 +109,6 @@ public class LegalTagCountriesServiceTests {
         }
         //the empty array should already be there, or null pointer exception would be thrown
         Map<String, String> validCoos = this.sut.getValidCOOs("Public Domain Data");
-        Assert.assertEquals(60, validCoos.size());
+        Assertions.assertEquals(60, validCoos.size());
     }
 }

@@ -4,16 +4,22 @@ import org.opengroup.osdu.core.common.model.tenant.TenantInfo;
 import org.opengroup.osdu.core.common.model.http.AppException;
 import org.opengroup.osdu.legal.provider.interfaces.IStorageReader;
 import org.opengroup.osdu.legal.provider.interfaces.IStorageReaderFactory;
-import junit.framework.TestCase;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 import static org.mockito.Mockito.when;
 
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 
+
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public class LegalTagCountriesTenantRepositoriesTests {
 
     @Mock
@@ -25,16 +31,16 @@ public class LegalTagCountriesTenantRepositoriesTests {
     @InjectMocks
     private LegalTagCountriesTenantRepositories sut;
 
-    @Before
+    @BeforeEach
     public void setup() {
-        MockitoAnnotations.initMocks(this);
     }
 
-    @Test(expected = AppException.class)
+    @Test
     public void should_throwAppException_when_givenBlankName(){
         TenantInfo tenantInfo = new TenantInfo();
         tenantInfo.setName("");
-        sut.get(tenantInfo, "us");
+
+        Assertions.assertThrows(AppException.class, () -> sut.get(tenantInfo, "us"));
     }
 
     @Test
@@ -43,6 +49,6 @@ public class LegalTagCountriesTenantRepositoriesTests {
         tenantInfo.setName("tenant1");
         when(storageReaderFactory.getReader(tenantInfo, "us")).thenReturn(storageReader);
         LegalTagCountriesRepository result = sut.get(tenantInfo, "us");
-        TestCase.assertNotNull(result);
+        Assertions.assertNotNull(result);
     }
 }

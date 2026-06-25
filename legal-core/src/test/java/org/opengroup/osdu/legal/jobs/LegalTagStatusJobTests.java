@@ -13,13 +13,16 @@ import org.opengroup.osdu.core.common.model.legal.Properties;
 import org.opengroup.osdu.legal.jobs.models.LegalTagJobResult;
 import org.opengroup.osdu.legal.FeatureFlagController;
 import org.opengroup.osdu.legal.config.LegalTagConfig;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -28,13 +31,14 @@ import java.time.Clock;
 import java.time.LocalDate;
 import java.time.ZoneId;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyBoolean;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.*;
-import static junit.framework.TestCase.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 
-@RunWith(MockitoJUnitRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public class LegalTagStatusJobTests {
     @Mock
     private LegalTagConstraintValidator validator;
@@ -64,7 +68,7 @@ public class LegalTagStatusJobTests {
 
     private final static LocalDate LOCAL_DATE = LocalDate.of(2022, 01, 01);
 
-    @Before
+    @BeforeEach
     public void setup() {
         when(validator.getErrors(any())).thenReturn(null);
         headers.put(DpsHeaders.DATA_PARTITION_ID, "SIS-INTERNAL-HQ");

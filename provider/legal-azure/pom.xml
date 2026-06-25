@@ -32,25 +32,10 @@
   <properties>
     <core-lib-azure.version>2.5.5</core-lib-azure.version>
     <gson.version>2.11.0</gson.version>
-
-    <!-- Plugin Versions -->
-    <surefire-plugin.version>3.2.5</surefire-plugin.version>
-    <jacoco-plugin.version>0.8.12</jacoco-plugin.version>
-    <jackson.version>2.21.1</jackson.version>
   </properties>
 
   <dependencyManagement>
     <dependencies>
-      <!-- Jackson override: Spring Boot 3.5.9 and other artifacts provides 2.19.4, we need 2.21.1 for GHSA-72hv-8253-57qq -->
-      <!-- Maybe remove this override when Spring Boot BOM updates to Jackson >= 2.21.1 -->
-      <dependency>
-        <groupId>com.fasterxml.jackson</groupId>
-        <artifactId>jackson-bom</artifactId>
-        <version>${jackson.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-
       <!-- Core Azure Library -->
       <dependency>
         <groupId>org.opengroup.osdu</groupId>
@@ -74,6 +59,16 @@
       <artifactId>core-lib-azure</artifactId>
       <version>${core-lib-azure.version}</version>
     </dependency>
+    <!--
+        os-core-common 7.0.0 declares lettuce-core as provided (not propagated).
+        core-lib-azure's IRedisClientFactory uses lettuce types; Mockito mocking
+        and runtime instantiation require lettuce-core on the classpath.
+    -->
+    <dependency>
+      <groupId>io.lettuce</groupId>
+      <artifactId>lettuce-core</artifactId>
+      <version>${lettuce.version}</version>
+    </dependency>
 
     <!-- Spring Dependencies -->
     <dependency>
@@ -89,10 +84,6 @@
           <artifactId>log4j-to-slf4j</artifactId>
         </exclusion>
       </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.springdoc</groupId>
-      <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
     </dependency>
 
     <!-- Project Dependencies -->
@@ -148,7 +139,6 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
-        <version>${surefire-plugin.version}</version>
         <dependencies>
 					<dependency>
 						<groupId>org.junit.vintage</groupId>
@@ -157,7 +147,7 @@
 					</dependency>
 				</dependencies>
         <configuration>
-          <argLine>@{argLine} --add-opens java.base/java.lang=ALL-UNNAMED</argLine>
+          <argLine>@{jacocoArgLine} --add-opens java.base/java.lang=ALL-UNNAMED</argLine>
         </configuration>
       </plugin>
 
@@ -165,8 +155,8 @@
       <plugin>
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
-        <version>${jacoco-plugin.version}</version>
         <configuration>
+          <propertyName>jacocoArgLine</propertyName>
           <excludes>
             <exclude>org/opengroup/osdu/legal/azure/LegalApplication.class</exclude>
             <exclude>**/**Config*</exclude>

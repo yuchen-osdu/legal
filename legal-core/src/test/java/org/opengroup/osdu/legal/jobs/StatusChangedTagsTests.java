@@ -1,10 +1,10 @@
 package org.opengroup.osdu.legal.jobs;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.opengroup.osdu.core.common.model.legal.StatusChangedTag;
 import org.opengroup.osdu.core.common.model.legal.StatusChangedTags;
 
-import static junit.framework.TestCase.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class StatusChangedTagsTests {
 

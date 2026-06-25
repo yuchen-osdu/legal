@@ -10,7 +10,6 @@
   </parent>
 
   <artifactId>legal-gc</artifactId>
-  <version>0.30.0-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>legal-gc</name>
   <description>Legal service for Google Cloud</description>
@@ -28,7 +27,6 @@
       <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
-        <version>3.2.2</version>
         <executions>
           <execution>
             <goals>
@@ -46,7 +44,6 @@
       <plugin>
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
-        <version>0.8.10</version>
         <executions>
           <execution>
             <goals>
@@ -65,12 +62,11 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
-        <version>3.0.0-M3</version>
         <dependencies>
           <dependency>
             <groupId>org.apache.maven.surefire</groupId>
             <artifactId>surefire-junit47</artifactId>
-            <version>3.0.0-M3</version>
+            <version>${maven-surefire-plugin.version}</version>
           </dependency>
         </dependencies>
       </plugin>

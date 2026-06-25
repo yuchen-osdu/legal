@@ -1,18 +1,18 @@
 package org.opengroup.osdu.legal.tags.validation;
 
 import org.opengroup.osdu.core.common.model.legal.AllowedLegaltagPropertyValues;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.opengroup.osdu.core.common.model.legal.validation.PersonalDataValidator;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class PersonalDataValidatorTests {
 
     static PersonalDataValidator sut;
 
-    @BeforeClass
+    @BeforeAll
     public static void setupClass(){
         sut = new PersonalDataValidator();
         sut.initialize(null);

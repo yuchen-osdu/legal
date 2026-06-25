@@ -2,16 +2,16 @@ package org.opengroup.osdu.legal.tags.dataaccess;
 
 import com.google.common.collect.Iterables;
 import org.opengroup.osdu.core.common.model.legal.LegalTag;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.opengroup.osdu.core.common.model.legal.ListLegalTagArgs;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.*;
 
 public class MemoryCacheLegalTagRepositoryTests {
@@ -20,7 +20,7 @@ public class MemoryCacheLegalTagRepositoryTests {
     LegalTagRepositoryWrapper wrapped = mock(LegalTagRepositoryWrapper.class);
     MemoryCacheLegalTagRepository sut = new MemoryCacheLegalTagRepository(wrapped, "my-tenant");
 
-    @Before
+    @BeforeEach
     public void setupTest(){
         legaltag.setName("name");
         legaltag.setId(1L);

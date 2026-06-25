@@ -1,26 +1,29 @@
 package org.opengroup.osdu.legal.middleware;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import org.opengroup.osdu.core.common.model.entitlements.AuthorizationResponse;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.core.common.provider.interfaces.IAuthorizationService;
 import org.opengroup.osdu.core.common.model.http.AppException;
-import org.opengroup.osdu.core.common.model.http.RequestInfo;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.springframework.test.util.ReflectionTestUtils;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.when;
 
-@RunWith(PowerMockRunner.class)
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
 public class AuthorizationFilterTests {
 
     private static final String ROLE1 = "role1";
@@ -30,16 +33,13 @@ public class AuthorizationFilterTests {
     @Mock
     private DpsHeaders headers;
     @Mock
-    private RequestInfo requestInfo;
-    @Mock
     private IAuthorizationService authorizationService;
     @InjectMocks
     private AuthorizationFilter sut;
 
-    @Before
+    @BeforeEach
     public void setup() {
-        MockitoAnnotations.initMocks(this);
-        when(headers.getAuthorization()).thenReturn("Bearer 123456");
+        ReflectionTestUtils.setField(sut, "authorizationService", authorizationService);
     }
 
     @Test
@@ -57,19 +57,16 @@ public class AuthorizationFilterTests {
         verify(headers).put(DpsHeaders.USER_AUTHORIZED_GROUP_NAME, AUTHORIZED_GROUP);
     }
 
-    @Test(expected = AppException.class)
+    @Test
     public void should_throwAppError_when_noAuthzProvided() {
-        when(this.authorizationService.authorizeAny(any(), any())).thenThrow(new AppException(403, "", ""));
-        final String USER_EMAIL = "test@test.com";
-
-        this.sut.hasPermission(ROLE1, ROLE2);
-        assertEquals(USER_EMAIL, this.headers.getUserEmail());
+        when(this.authorizationService.authorizeAny(any(), eq(ROLE1), eq(ROLE2))).thenThrow(new AppException(403, "", ""));
+        assertThrows(AppException.class, () -> this.sut.hasPermission(ROLE1, ROLE2));
     }
 
-    @Test(expected = AppException.class)
+    @Test
     public void should_notAuthenticateRequest_when_appEngineCronHeaderIsNotAsExpectedForCronJob() {
-        when(this.authorizationService.authorizeAny(any(), any())).thenThrow(new AppException(403, "", ""));
-        when(this.requestInfo.isCronRequest()).thenReturn(false);
-        this.sut.hasPermission(ROLE3);
+        when(this.authorizationService.authorizeAny(any(), eq(ROLE3))).thenThrow(new AppException(403, "", ""));
+
+        assertThrows(AppException.class, () -> this.sut.hasPermission(ROLE3));
     }
 }
