@@ -1,12 +1,12 @@
 package org.opengroup.osdu.legal.tags.model;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 import org.opengroup.osdu.core.common.model.legal.CountryCodes;
 
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static junit.framework.TestCase.assertEquals;
 
 public class CountryCodesTests {
     @Test

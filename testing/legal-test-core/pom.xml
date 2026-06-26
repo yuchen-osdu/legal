@@ -25,8 +25,11 @@
   </parent>
 
   <artifactId>legal-test-core</artifactId>
+  <version>0.30.0-SNAPSHOT</version>
   <packaging>jar</packaging>
   <properties>
+    <maven.compiler.target>17</maven.compiler.target>
+    <maven.compiler.source>17</maven.compiler.source>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.main.basedir>${project.basedir}</project.main.basedir>
   </properties>
@@ -40,7 +43,7 @@
     <dependency>
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
-        <scope>compile</scope>
+        <version>4.12</version>
     </dependency>
     <dependency>
       <groupId>com.google.code.gson</groupId>
@@ -65,9 +68,17 @@
     <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
-      <scope>provided</scope>
-      <optional>true</optional>
+      <version>1.18.28</version>
     </dependency>
   </dependencies>
 
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.8.1</version>
+      </plugin>
+    </plugins>
+  </build>
 </project>

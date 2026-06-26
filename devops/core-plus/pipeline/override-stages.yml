@@ -2,14 +2,6 @@ variables:
   CIMPL_SERVICE: legal
   CIMPL_LEGALSTATUS_IMAGE_NAME: cimpl-legal-status-update
 
-# os-core-test 0.2.0 GetInfoAssertions gates feature-flag checks on
-# EXPOSE_FEATUREFLAG_ENABLED. The deployed legal service exposes feature flags,
-# so the acceptance test must expect them (otherwise asserts null vs the live
-# FeatureFlagState list). Same fix applied to storage.
-cimpl-acceptance-test:
-  variables:
-    EXPOSE_FEATUREFLAG_ENABLED: "true"
-
 cimpl-containerize-cronjob-gitlab:
   extends: cimpl-containerize-gitlab
   variables:

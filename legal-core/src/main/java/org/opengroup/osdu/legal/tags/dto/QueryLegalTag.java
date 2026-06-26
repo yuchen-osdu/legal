@@ -21,12 +21,9 @@ public class QueryLegalTag {
     @Schema(description = "If there are multiple conditions need to be joined in by logical operators")
     private List<String> operatorList;
 
-    @Schema(description = "The field to sort results by")
     private String sortBy;
 
-    @Schema(description = "The sort order, e.g. 'ASC' or 'DESC'")
     private String sortOrder;
 
-    @Schema(description = "The maximum number of LegalTags to return")
     private int limit;
 }

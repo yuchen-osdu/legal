@@ -2,25 +2,21 @@ package org.opengroup.osdu.legal.logging;
 
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import org.junit.jupiter.api.extension.ExtendWith;
 
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Collections;
 import java.util.List;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
 import org.opengroup.osdu.core.common.logging.audit.AuditStatus;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 
-@ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.LENIENT)
+@RunWith(MockitoJUnitRunner.class)
 public class AuditLoggerTests {
 
     private static final String TEST_USER = "test@example.com";
@@ -43,7 +39,7 @@ public class AuditLoggerTests {
     private List<String> resources;
     private AuditEvents auditEvents;
 
-    @BeforeEach
+    @Before
     public void setup() {
         resources = Collections.singletonList("1");
 

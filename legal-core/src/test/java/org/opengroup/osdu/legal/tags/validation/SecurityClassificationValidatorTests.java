@@ -2,14 +2,14 @@ package org.opengroup.osdu.legal.tags.validation;
 
 import org.opengroup.osdu.core.common.model.legal.validation.SecurityClassificationValidator;
 import org.opengroup.osdu.core.common.model.legal.AllowedLegaltagPropertyValues;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 import jakarta.validation.ConstraintValidatorContext;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -17,7 +17,7 @@ public class SecurityClassificationValidatorTests {
 
     static SecurityClassificationValidator sut;
 
-    @BeforeAll
+    @BeforeClass
     public static void setupClass(){
         sut = new SecurityClassificationValidator();
         sut.initialize(null);

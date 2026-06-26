@@ -16,14 +16,11 @@
 package org.opengroup.osdu.legal.service;
 
 import org.apache.commons.lang3.NotImplementedException;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.opengroup.osdu.core.common.model.entitlements.AuthorizationResponse;
 import org.opengroup.osdu.core.common.model.entitlements.GroupInfo;
 import org.opengroup.osdu.core.common.model.entitlements.Groups;
@@ -32,13 +29,11 @@ import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.LENIENT)
+@RunWith(MockitoJUnitRunner.class)
 public class AuthorizationServiceTest {
 
     private static final String MEMBER_EMAIL = "memberEmail";
@@ -49,7 +44,7 @@ public class AuthorizationServiceTest {
     @InjectMocks
     private AuthorizationService sut;
 
-    @Test
+    @Test(expected = AppException.class)
     public void should_throwAppException_when_givenGroupDoesNotExistForUser() {
         GroupInfo groupInfo = new GroupInfo();
         groupInfo.setName("c");
@@ -57,7 +52,7 @@ public class AuthorizationServiceTest {
         group.setGroups(List.of(groupInfo));
         when(entitlementsService.getGroups(any())).thenReturn(group);
 
-        assertThrows(AppException.class, () -> sut.authorizeAny(new DpsHeaders(), "a", "b"));
+        sut.authorizeAny(new DpsHeaders(), "a", "b");
     }
 
     @Test
@@ -75,10 +70,9 @@ public class AuthorizationServiceTest {
         assertEquals(group, response.getGroups());
     }
 
-    @Test
+    @Test(expected = NotImplementedException.class)
     public void should_throwNotImplementedException_when_authorizeAnyWithPartitionParameter() {
         String partition = "partition";
-
-        assertThrows(NotImplementedException.class, () -> sut.authorizeAny(partition, new DpsHeaders(), "a", "b"));
+        sut.authorizeAny(partition, new DpsHeaders(), "a", "b");
     }
 }

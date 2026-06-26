@@ -1,12 +1,15 @@
 package org.opengroup.osdu.legal.util;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.Assert.assertEquals;
 
-
-import org.junit.jupiter.api.Test;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.contrib.java.lang.system.RestoreSystemProperties;
 import org.opengroup.osdu.core.common.model.legal.ServiceConfig;
 
 public class ServiceConfigTests {
+	@Rule
+	public final RestoreSystemProperties restoreSystemProperties = new RestoreSystemProperties();
 
 	@Test
 	public void should_getEnvVariables() {

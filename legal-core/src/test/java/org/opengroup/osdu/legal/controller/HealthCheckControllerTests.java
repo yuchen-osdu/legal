@@ -1,9 +1,9 @@
 package org.opengroup.osdu.legal.controller;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.Assert.assertEquals;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.Test;
 import org.opengroup.osdu.legal.controller.HealthCheckController;
 import org.springframework.http.HttpStatus;
 
@@ -11,7 +11,7 @@ public class HealthCheckControllerTests {
 
 	private HealthCheckController sut;
 
-	@BeforeEach
+	@Before
 	public void setup() {
 		this.sut = new HealthCheckController();
 	}

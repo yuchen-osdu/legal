@@ -20,11 +20,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.opengroup.osdu.legal.tags.dto.UpdateLegalTag;
 import static org.opengroup.osdu.core.common.util.SerializationUtils.EXPIRATION_DATE_FORMAT;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 import  java.util.Date;
 import java.text.SimpleDateFormat;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.Assert.*;
+import static junit.framework.TestCase.assertEquals;
 
 public class UpdateLegalTagTests {
     private final ObjectMapper objectMapper = new ObjectMapper();

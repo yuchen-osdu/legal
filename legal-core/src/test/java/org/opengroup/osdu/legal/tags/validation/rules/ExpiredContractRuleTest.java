@@ -1,13 +1,13 @@
 package org.opengroup.osdu.legal.tags.validation.rules;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 import org.opengroup.osdu.core.common.model.legal.Properties;
 import org.opengroup.osdu.legal.tags.LegalTestUtils;
 
 import java.sql.Date;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class ExpiredContractRuleTest {
 

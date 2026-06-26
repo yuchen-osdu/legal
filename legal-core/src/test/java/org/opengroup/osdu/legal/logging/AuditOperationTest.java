@@ -14,13 +14,13 @@
 
 package org.opengroup.osdu.legal.logging;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.List;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 import org.opengroup.osdu.legal.service.LegalServiceRole;
 
 public class AuditOperationTest {
@@ -101,7 +101,7 @@ public class AuditOperationTest {
     assertNotNull(roles);
     try {
       roles.add("should-fail");
-      assertTrue(false, "Expected UnsupportedOperationException");
+      assertTrue("Expected UnsupportedOperationException", false);
     } catch (UnsupportedOperationException e) {
       // expected
     }
@@ -111,7 +111,7 @@ public class AuditOperationTest {
   public void should_haveAllOperationsDefined() {
     for (AuditOperation op : AuditOperation.values()) {
       assertNotNull(op.getRequiredGroups());
-      assertTrue(op.getRequiredGroups().size() > 0, op.name() + " should have at least one required group");
+      assertTrue(op.name() + " should have at least one required group", op.getRequiredGroups().size() > 0);
     }
   }
 }

@@ -3,25 +3,21 @@ package org.opengroup.osdu.legal.tags.model;
 import org.opengroup.osdu.core.common.model.legal.AllowedLegaltagPropertyValues;
 import org.opengroup.osdu.core.common.model.legal.DataTypeValues;
 import org.opengroup.osdu.core.common.model.http.RequestInfo;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
+import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.LENIENT)
+@RunWith(MockitoJUnitRunner.class)
 public class AllowedLegaltagPropertyValuesTests {
     @InjectMocks
     AllowedLegaltagPropertyValues sut;
@@ -30,8 +26,9 @@ public class AllowedLegaltagPropertyValuesTests {
     @Mock
     RequestInfo requestInfo;
 
-    @BeforeEach
+    @Before
     public void setUp() throws Exception {
+		MockitoAnnotations.initMocks(this);
     }
     
     @Test

@@ -1,26 +1,22 @@
 package org.opengroup.osdu.legal.tags.validation;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.opengroup.osdu.legal.countries.LegalTagCountriesService;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.LENIENT)
+@RunWith(MockitoJUnitRunner.class)
 public class OtherRelevantDataCountriesValidatorTests {
 
     @Mock
@@ -29,7 +25,7 @@ public class OtherRelevantDataCountriesValidatorTests {
     @InjectMocks
     private OtherRelevantDataCountriesValidator sut;
 
-    @BeforeEach
+    @Before
     public void setupClass(){
         Map<String, String> ordc = new HashMap<String, String>() {{
             put("US", "usa");

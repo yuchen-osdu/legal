@@ -1,16 +1,13 @@
 package org.opengroup.osdu.legal.controller;
 
 import com.google.common.collect.Iterables;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
+import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.opengroup.osdu.core.common.model.http.DpsHeaders;
 import org.opengroup.osdu.core.common.model.http.RequestInfo;
 import org.opengroup.osdu.core.common.model.legal.AllowedLegaltagPropertyValues;
@@ -33,15 +30,14 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Collections;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.LENIENT)
+@RunWith(MockitoJUnitRunner.class)
 public class LegalTagControllerTests {
 
     @Mock
@@ -71,8 +67,9 @@ public class LegalTagControllerTests {
     @InjectMocks
     private LegalTagController sut;
 
-    @BeforeEach
+    @Before
     public void setup() {
+        MockitoAnnotations.initMocks(this);
         when(this.requestInfo.getHeaders()).thenReturn(dpsHeaders);
         when(this.requestInfo.getTenantInfo()).thenReturn(tenantInfo);
         when(this.tenantInfo.getName()).thenReturn("tenantName");

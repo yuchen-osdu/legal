@@ -1,15 +1,12 @@
 package org.opengroup.osdu.legal.tags;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.junit.jupiter.MockitoSettings;
-import org.mockito.quality.Strictness;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
 import org.opengroup.osdu.core.common.model.http.AppException;
@@ -28,20 +25,20 @@ import org.opengroup.osdu.legal.tags.util.PersistenceExceptionToAppExceptionMapp
 import java.sql.Date;
 import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
-@MockitoSettings(strictness = Strictness.LENIENT)
+@RunWith(MockitoJUnitRunner.class)
 public class LegalTagServiceTests {
     private PersistenceExceptionToAppExceptionMapper mapper = new PersistenceExceptionToAppExceptionMapper();
     @Mock
@@ -63,7 +60,7 @@ public class LegalTagServiceTests {
     private LegalTagService sut;
 
 
-    @BeforeEach
+    @Before
     public void setup() {
         sut.exceptionMapper = mapper;
         when(validator.getErrors(any())).thenReturn(null);
@@ -516,8 +513,8 @@ public class LegalTagServiceTests {
         });
 
         // Assert: Check if the exception has the expected status code, error type, and message.
-        assertEquals(400, thrown.getError().getCode(), "Expected 400 BadRequest error code");
-        assertEquals("BadRequest", thrown.getError().getReason(), "Expected BadRequest error type");
+        assertEquals("Expected 400 BadRequest error code", 400, thrown.getError().getCode());
+        assertEquals("Expected BadRequest error type", "BadRequest", thrown.getError().getReason());
     }
 
     @Test
@@ -532,8 +529,8 @@ public class LegalTagServiceTests {
         });
 
         // Assert: Check if the exception has the expected status code, error type, and message.
-        assertEquals(400, thrown.getError().getCode(), "Expected 400 BadRequest error code");
-        assertEquals("BadRequest", thrown.getError().getReason(), "Expected BadRequest error type");
+        assertEquals("Expected 400 BadRequest error code", 400, thrown.getError().getCode());
+        assertEquals("Expected BadRequest error type", "BadRequest", thrown.getError().getReason());
     }
 
     @Test
@@ -555,7 +552,7 @@ public class LegalTagServiceTests {
 
         Collection<LegalTag> legalTagDtos = sut.listLegalTag(true, "tenant1");
 
-        assertFalse(legalTagDtos.isEmpty(), "collection size > 0");
+        assertFalse("collection size > 0", legalTagDtos.isEmpty());
 
     }
 
@@ -595,9 +592,9 @@ public class LegalTagServiceTests {
 
         LegalTagDtos resultDto = sut.queryLegalTag(searchLegalTag, true, "tenant1");
         if (expectFound) {
-            assertFalse(resultDto.getLegalTags().isEmpty(), String.format("expected collection isNotEmpty, Query: %s", testQuery));
+            assertFalse(String.format("expected collection isNotEmpty, Query: %s", testQuery), resultDto.getLegalTags().isEmpty());
         } else {
-            assertTrue(resultDto.getLegalTags().isEmpty(), String.format("expected collection isEmpty, Query: %s", testQuery));
+            assertTrue(String.format("expected collection isEmpty, Query: %s", testQuery), resultDto.getLegalTags().isEmpty());
         }
 
     }
@@ -611,9 +608,9 @@ public class LegalTagServiceTests {
 
         LegalTagDtos resultDto = sut.queryLegalTag(searchLegalTag, true, "tenant1");
         if (expectFound) {
-            assertFalse(resultDto.getLegalTags().isEmpty(), String.format("expected collection isNotEmpty, Query: %s", testQuery));
+            assertFalse(String.format("expected collection isNotEmpty, Query: %s", testQuery), resultDto.getLegalTags().isEmpty());
         } else {
-            assertTrue(resultDto.getLegalTags().isEmpty(), String.format("expected collection isEmpty, Query: %s", testQuery));
+            assertTrue(String.format("expected collection isEmpty, Query: %s", testQuery), resultDto.getLegalTags().isEmpty());
         }
 
     }
@@ -704,7 +701,7 @@ public class LegalTagServiceTests {
         searchLegalTag.setOperatorList(Collections.emptyList());
 
         LegalTagDtos resultDto = sut.queryLegalTag(searchLegalTag, true, "tenant1");
-        assertFalse(resultDto.getLegalTags().isEmpty(), "collection size > 0");
+        assertFalse("collection size > 0", resultDto.getLegalTags().isEmpty());
     }
 
     private LegalTagService createSutWithExtensionProperties_test1() {
