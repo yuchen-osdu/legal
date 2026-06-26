@@ -1,0 +1,22 @@
+{
+  "instrumentations": [
+    {
+      "entityType": "org.opengroup.osdu.core.common.model.legal.LegalTag",
+      "fieldNameCustomMapping": {
+        "countryOfOrigin": "COO",
+        "createdDate": "created"
+      },
+      "fieldTypeCustomMapping": {
+        "created": "shaded.osm.com.google.cloud.Timestamp",
+        "expirationDate": "shaded.osm.com.google.cloud.Timestamp",
+        "isValid": "java.lang.Boolean"
+      },
+      "identityTranslator": {
+        "getIdMethod": "getId",
+        "setIdMethod": "setId",
+        "keyClass": "java.lang.Long"
+      },
+      "keyFields": ["id"]
+    }
+  ]
+}

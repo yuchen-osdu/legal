@@ -1,0 +1,79 @@
+variables:
+  CIMPL_SERVICE: legal
+  CIMPL_LEGALSTATUS_IMAGE_NAME: cimpl-legal-status-update
+
+# os-core-test 0.2.0 GetInfoAssertions gates feature-flag checks on
+# EXPOSE_FEATUREFLAG_ENABLED. The deployed legal service exposes feature flags,
+# so the acceptance test must expect them (otherwise asserts null vs the live
+# FeatureFlagState list). Same fix applied to storage.
+cimpl-acceptance-test:
+  variables:
+    EXPOSE_FEATUREFLAG_ENABLED: "true"
+
+cimpl-containerize-cronjob-gitlab:
+  extends: cimpl-containerize-gitlab
+  variables:
+    CIMPL_IMAGE_NAME: "$CIMPL_LEGALSTATUS_IMAGE_NAME"
+    CIMPL_BUILD_PATH: "devops/core-plus/bootstrap_legalstatus_update/Dockerfile"
+
+.cimpl_set_image_name:
+  script:
+    - >
+      if echo $CI_COMMIT_REF_NAME | grep -Eq "^release\/[0-9]{1,2}.[0-9]{1,2}$";
+      then
+        export CIMPL_IMAGE_NAME=$CIMPL_IMAGE_NAME-release;
+        export CIMPL_IMAGE_BOOTSTRAP_NAME=$CIMPL_IMAGE_BOOTSTRAP_NAME-release;
+        export CIMPL_LEGALSTATUS_IMAGE_NAME=$CIMPL_LEGALSTATUS_IMAGE_NAME-release;
+      fi
+    - >
+      if [[ "$CI_COMMIT_REF_NAME" == "$CI_DEFAULT_BRANCH" ]];
+      then
+        export CIMPL_IMAGE_NAME=$CIMPL_IMAGE_NAME-master;
+        export CIMPL_IMAGE_BOOTSTRAP_NAME=$CIMPL_IMAGE_BOOTSTRAP_NAME-master;
+        export CIMPL_LEGALSTATUS_IMAGE_NAME=$CIMPL_LEGALSTATUS_IMAGE_NAME-master;
+      fi
+    - >
+      if [[ "$CI_COMMIT_TAG" != "" ]];
+      then
+        IMAGE_TAG="$CI_COMMIT_TAG";
+        EXTRA_TAG="-t $CI_REGISTRY_IMAGE/$CIMPL_IMAGE_NAME:$CI_COMMIT_TAG";
+        EXTRA_BOOTSTRAP_TAG="-t $CI_REGISTRY_IMAGE/$CIMPL_IMAGE_BOOTSTRAP_NAME:$CI_COMMIT_TAG";
+      elif [[ "$CI_COMMIT_REF_NAME" == "$CI_DEFAULT_BRANCH" ]];
+      then
+        IMAGE_TAG="$CI_COMMIT_SHORT_SHA";
+        CIMPL_HELM_TAG="latest"
+        EXTRA_TAG="-t $CI_REGISTRY_IMAGE/$CIMPL_IMAGE_NAME:$CI_COMMIT_SHORT_SHA -t $CI_REGISTRY_IMAGE/$CIMPL_IMAGE_NAME:latest";
+        EXTRA_BOOTSTRAP_TAG="-t $CI_REGISTRY_IMAGE/$CIMPL_IMAGE_BOOTSTRAP_NAME:$CI_COMMIT_SHORT_SHA -t $CI_REGISTRY_IMAGE/$CIMPL_IMAGE_BOOTSTRAP_NAME:latest";
+      else
+        IMAGE_TAG="$CI_COMMIT_SHORT_SHA";
+        CIMPL_HELM_TAG="cimpl$CI_COMMIT_SHORT_SHA"
+        EXTRA_TAG="-t $CI_REGISTRY_IMAGE/$CIMPL_IMAGE_NAME:$CI_COMMIT_SHORT_SHA";
+        EXTRA_BOOTSTRAP_TAG="-t $CI_REGISTRY_IMAGE/$CIMPL_IMAGE_BOOTSTRAP_NAME:$CI_COMMIT_SHORT_SHA";
+      fi
+ 
+.cimpl_substitute_image_in_helm:
+  script:
+    - wget -q https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/bin/yq && chmod +x /usr/bin/yq
+    - IMAGE="$CI_REGISTRY_IMAGE/$CIMPL_IMAGE_NAME:$IMAGE_TAG" yq -i '.data.image = env(IMAGE)' $CIMPL_HELM_DEPLOYMENT_DIR/values.yaml
+    - yq -e '.data | has("bootstrapImage")' $CIMPL_HELM_DEPLOYMENT_DIR/values.yaml &>/dev/null && BOOTSTRAP_IMAGE="$CI_REGISTRY_IMAGE/$CIMPL_IMAGE_BOOTSTRAP_NAME:$IMAGE_TAG" yq -i '.data.bootstrapImage = env(BOOTSTRAP_IMAGE)' $CIMPL_HELM_DEPLOYMENT_DIR/values.yaml
+    # On the rolling default-branch chart, pin the status-update image to the
+    # mutable :latest tag (re-pushed every build). The registry cleanup policy
+    # retains only v.* tags, so a SHA pin here is purged and the CronJob lands
+    # in ImagePullBackOff. Release/tag charts keep the immutable tag.
+    - >
+      if [[ "$CI_COMMIT_REF_NAME" == "$CI_DEFAULT_BRANCH" ]];
+      then
+        LEGALSTATUS_UPDATE_TAG="latest";
+      else
+        LEGALSTATUS_UPDATE_TAG="$IMAGE_TAG";
+      fi
+    - LEGALSTATUS_UPDATE_IMAGE="$CI_REGISTRY_IMAGE/$CIMPL_LEGALSTATUS_IMAGE_NAME:$LEGALSTATUS_UPDATE_TAG" yq -i '.data.legalStatusUpdateImage = env(LEGALSTATUS_UPDATE_IMAGE)' $CIMPL_HELM_DEPLOYMENT_DIR/values.yaml
+    - cat $CIMPL_HELM_DEPLOYMENT_DIR/values.yaml | grep -i image
+
+#standby (Blue-Green): no per-service overrides required.
+# This service inherits cimpl-standby-deploy from the central
+# cimpl-standby-rosa.yml template. The .cimpl_set_image_name and
+# .cimpl_substitute_image_in_helm overrides above already apply to every
+# deploy (dev1, dev2, standby) because the central deploy script uses
+# !reference into these anchors. Enable standby deploys by setting
+# $CIMPL_STANDBY=1 in this project's CI/CD variables.

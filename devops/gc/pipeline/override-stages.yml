@@ -1,0 +1,88 @@
+variables:
+  GC_SERVICE: legal
+  GC_VENDOR: gc
+  GC_LEGALSTATUS_IMAGE_NAME: gc-legal-status-update
+
+.gc_set_image_name:
+  script:
+    - >
+      if echo $CI_COMMIT_REF_NAME | grep -Eq "^release\/[0-9]{1,2}.[0-9]{1,2}$";
+      then
+        export IMAGE_NAME=$IMAGE_NAME-release;
+        export IMAGE_BOOTSTRAP_NAME=$IMAGE_BOOTSTRAP_NAME-release;
+        export GC_LEGALSTATUS_IMAGE_NAME=$GC_LEGALSTATUS_IMAGE_NAME-release;
+      fi
+    - >
+      if [[ "$CI_COMMIT_REF_NAME" == "$CI_DEFAULT_BRANCH" ]];
+      then
+        export IMAGE_NAME=$IMAGE_NAME-master;
+        export IMAGE_BOOTSTRAP_NAME=$IMAGE_BOOTSTRAP_NAME-master;
+        export GC_LEGALSTATUS_IMAGE_NAME=$GC_LEGALSTATUS_IMAGE_NAME-master;
+      fi
+    - >
+      if [[ "$CI_COMMIT_TAG" != "" ]];
+      then
+        IMAGE_TAG="$CI_COMMIT_TAG";
+        EXTRA_TAG="-t $CI_REGISTRY_IMAGE/$IMAGE_NAME:$CI_COMMIT_TAG";
+        EXTRA_BOOTSTRAP_TAG="-t $CI_REGISTRY_IMAGE/$IMAGE_BOOTSTRAP_NAME:$CI_COMMIT_TAG";
+      elif [[ "$CI_COMMIT_REF_NAME" == "$CI_DEFAULT_BRANCH" ]];
+      then
+        IMAGE_TAG="$CI_COMMIT_SHORT_SHA";
+        HELM_TAG="latest"
+        EXTRA_TAG="-t $CI_REGISTRY_IMAGE/$IMAGE_NAME:$CI_COMMIT_SHORT_SHA -t $CI_REGISTRY_IMAGE/$IMAGE_NAME:latest";
+        EXTRA_BOOTSTRAP_TAG="-t $CI_REGISTRY_IMAGE/$IMAGE_BOOTSTRAP_NAME:$CI_COMMIT_SHORT_SHA -t $CI_REGISTRY_IMAGE/$IMAGE_BOOTSTRAP_NAME:latest";
+      else
+        IMAGE_TAG="$CI_COMMIT_SHORT_SHA";
+        HELM_TAG="gc$CI_COMMIT_SHORT_SHA"
+        EXTRA_TAG="-t $CI_REGISTRY_IMAGE/$IMAGE_NAME:$CI_COMMIT_SHORT_SHA";
+        EXTRA_BOOTSTRAP_TAG="-t $CI_REGISTRY_IMAGE/$IMAGE_BOOTSTRAP_NAME:$CI_COMMIT_SHORT_SHA";
+      fi
+
+.gc_substitute_image_in_helm:
+  script:
+    - wget -q https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/bin/yq && chmod +x /usr/bin/yq
+    - IMAGE="$CI_REGISTRY_IMAGE/$IMAGE_NAME:$IMAGE_TAG" yq -i '.data.image = env(IMAGE)' $GC_HELM_DEPLOYMENT_DIR/values.yaml
+    - yq -e '.data | has("bootstrapImage")' $GC_HELM_DEPLOYMENT_DIR/values.yaml &>/dev/null && BOOTSTRAP_IMAGE="$CI_REGISTRY_IMAGE/$IMAGE_BOOTSTRAP_NAME:$IMAGE_TAG" yq -i '.data.bootstrapImage = env(BOOTSTRAP_IMAGE)' $GC_HELM_DEPLOYMENT_DIR/values.yaml
+    - LEGALSTATUS_UPDATE_IMAGE="$CI_REGISTRY_IMAGE/$GC_LEGALSTATUS_IMAGE_NAME:$IMAGE_TAG" yq -i '.data.legalStatusUpdateImage = env(LEGALSTATUS_UPDATE_IMAGE)' $GC_HELM_DEPLOYMENT_DIR/values.yaml
+    - cat $GC_HELM_DEPLOYMENT_DIR/values.yaml | grep -i image
+
+gc-containerize-cronjob-gitlab:
+  extends: gc-containerize-gitlab
+  variables:
+    IMAGE_NAME: "$GC_LEGALSTATUS_IMAGE_NAME"
+    BUILD_PATH: "devops/$GC_VENDOR/bootstrap_legalstatus_update/Dockerfile"
+
+gc-containerize-cronjob-gcr:
+  extends: gc-containerize-gcr
+  variables:
+    IMAGE_NAME: "$GC_LEGALSTATUS_IMAGE_NAME"
+    BUILD_PATH: "devops/$GC_VENDOR/bootstrap_legalstatus_update/Dockerfile"
+
+download_gc_plugins:
+  image: maven:3.8.3-openjdk-17-slim
+  stage: build
+  variables:
+    GC_OSM_PACKAGE_REGISTRY_URL: "https://community.opengroup.org/api/v4/projects/1476/packages/maven"
+    GC_OSM_VERSION: "0.28.0"
+    GC_OBM_PACKAGE_REGISTRY_URL: "https://community.opengroup.org/api/v4/projects/1475/packages/maven"
+    GC_OBM_VERSION: "0.28.0"
+    GC_OQM_PACKAGE_REGISRTY_URL: "https://community.opengroup.org/api/v4/projects/1477/packages/maven"
+    GC_OQM_VERSION: "0.27.0-rc2"
+  artifacts:
+    paths:
+      - ./tmp-gc/*.jar
+    when: always
+    expire_in: 1 days
+  script:
+    - mvn dependency:copy -DrepoUrl=$GC_OSM_PACKAGE_REGISTRY_URL -Dartifact="org.opengroup.osdu:gc-osm-datastore:$GC_OSM_VERSION:jar:plugin" -Dtransitive=false -DoutputDirectory="./tmp-gc"
+    - mvn dependency:copy -DrepoUrl=$GC_OBM_PACKAGE_REGISTRY_URL -Dartifact="org.opengroup.osdu:gc-obm-gs:$GC_OBM_VERSION:jar:plugin" -Dtransitive=false -DoutputDirectory="./tmp-gc"
+    - mvn dependency:copy -DrepoUrl=$GC_OQM_PACKAGE_REGISRTY_URL -Dartifact="org.opengroup.osdu:gc-oqm-pubsub:$GC_OQM_VERSION:jar:plugin" -Dtransitive=false -DoutputDirectory="./tmp-gc"
+  only:
+    variables:
+      - $GC == '1'
+
+gc-containerize-gitlab:
+  needs: ["gc-compile-and-unit-test", "download_gc_plugins"]
+
+gc-containerize-gcr:
+  needs: ["gc-compile-and-unit-test", "download_gc_plugins"]
