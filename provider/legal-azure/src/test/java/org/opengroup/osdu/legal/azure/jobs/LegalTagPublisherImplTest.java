@@ -195,7 +195,7 @@ public class LegalTagPublisherImplTest {
 
         var cloudExceptionMessage = "Cloud Exception occurred";
         MediaType mediaType = null;
-        Response<ResponseBody> errorResponse = Response.error(503, ResponseBody.create("Service Unavailable", mediaType));
+        Response<ResponseBody> errorResponse = Response.error(503, ResponseBody.create(mediaType, "Service Unavailable"));
         CloudException cloudException = new CloudException(cloudExceptionMessage, errorResponse);
         doThrow(cloudException).when(eventGridTopicStore).publishToEventGridTopic(partitionNameCaptor.capture(), topicNameArgumentCaptor.capture(), listEventGridEventArgumentCaptor.capture());
 
