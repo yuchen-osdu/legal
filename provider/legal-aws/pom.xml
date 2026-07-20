@@ -27,46 +27,28 @@
     <packaging>jar</packaging>
 
     <properties>
-        <netty.version>4.1.124.Final</netty.version>
-        <tomcat-core.version>10.1.48</tomcat-core.version>
     </properties>
-
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>io.netty</groupId>
-                <artifactId>netty-codec-http2</artifactId>
-                <version>${netty.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.netty</groupId>
-                <artifactId>netty-common</artifactId>
-                <version>${netty.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>io.netty</groupId>
-                <artifactId>netty-handler</artifactId>
-                <version>${netty.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.tomcat.embed</groupId>
-                <artifactId>tomcat-embed-core</artifactId>
-                <version>${tomcat-core.version}</version>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
 
     <dependencies>
         <!-- Internal packages -->
         <dependency>
             <groupId>org.opengroup.osdu.core.aws</groupId>
             <artifactId>os-core-lib-aws</artifactId>
-            <version>6.0.0</version>
+            <version>8.0.3</version>
         </dependency>
         <dependency>
             <groupId>org.opengroup.osdu.legal</groupId>
             <artifactId>legal-core</artifactId>
             <version>0.30.0-SNAPSHOT</version>
+        </dependency>
+        <!-- CVE-2025-58057: legal-core declares lettuce-core ${lettuce.version} (7.5.2), but as a
+             transitive into legal-aws the Spring Boot BOM manages it back down to the vulnerable
+             6.6.0. Declare it directly here (mirrors legal-azure and crs-converter-aws) so the
+             deployable bundles 7.5.2.RELEASE. -->
+        <dependency>
+            <groupId>io.lettuce</groupId>
+            <artifactId>lettuce-core</artifactId>
+            <version>${lettuce.version}</version>
         </dependency>
 
         <!-- Third party Apache 2.0 license packages -->
@@ -91,7 +73,6 @@
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-crypto</artifactId>
-            <version>6.3.8</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.security</groupId>
