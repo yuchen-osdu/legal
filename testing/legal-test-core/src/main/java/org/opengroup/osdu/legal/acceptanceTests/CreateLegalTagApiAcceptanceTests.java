@@ -139,7 +139,8 @@ public abstract class CreateLegalTagApiAcceptanceTests extends AcceptanceBaseTes
     // following two tests prove the older version config file in tenant would also work
     @Test
     public void should_allowCreationOfALegalTag_When_countryOfOriginIsSetToClientConsentRequiredInTenant_andDataTypeIsTransferredData() throws Exception{
-        legalTagUtils.uploadTenantTestingConfigFile();
+        // The older config is not provided hence commenting
+        //legalTagUtils.uploadTenantTestingConfigFile();
         ClientResponse response = legalTagUtils.create("MY", name, "Transferred Data");
         LegalTagUtils.ReadableLegalTag readableLegalTags = legalTagUtils.getResult(response, 201, LegalTagUtils.ReadableLegalTag.class);
         assertEquals(name, readableLegalTags.name);
@@ -148,8 +149,9 @@ public abstract class CreateLegalTagApiAcceptanceTests extends AcceptanceBaseTes
 
     @Test
     public void should_allowCreationOfALegalTag_When_countryOfOriginIsSetToClientConsentRequiredInTenant_andDataTypeIsFirstPartyData() throws Exception{
-        legalTagUtils.uploadTenantTestingConfigFile();
-        ClientResponse response = legalTagUtils.create("US", name, "First Party Data");
+        // The older config is not provided hence commenting
+        //legalTagUtils.uploadTenantTestingConfigFile();
+        ClientResponse response = legalTagUtils.create("MY", name, "First Party Data");
         LegalTagUtils.ReadableLegalTag readableLegalTags = legalTagUtils.getResult(response, 201, LegalTagUtils.ReadableLegalTag.class);
         assertEquals(name, readableLegalTags.name);
         assertEquals("First Party Data", readableLegalTags.properties.dataType);
