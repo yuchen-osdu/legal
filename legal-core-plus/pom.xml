@@ -26,6 +26,7 @@
   </parent>
 
   <artifactId>legal-core-plus</artifactId>
+  <version>0.30.0-SNAPSHOT</version>
   <packaging>jar</packaging>
   <name>legal-core-plus</name>
   <description>Legal service for Hybrid Cloud</description>

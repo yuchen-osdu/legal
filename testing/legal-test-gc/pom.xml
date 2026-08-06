@@ -26,6 +26,7 @@
     </parent>
 
     <artifactId>legal-test-gc</artifactId>
+    <version>0.30.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <properties>
