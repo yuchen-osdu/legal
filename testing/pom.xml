@@ -18,7 +18,7 @@
 	<modelVersion>4.0.0</modelVersion>
   <groupId>org.opengroup.osdu.legal</groupId>
   <artifactId>os-legal-testing</artifactId>
-  <version>0.30.0-SNAPSHOT</version>
+  <version>0.31.0-SNAPSHOT</version>
 	<description>Root Legal Service project</description>
 	<packaging>pom</packaging>
     <properties>
