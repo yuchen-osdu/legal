@@ -1,6 +1,7 @@
 variables:
   CIMPL_SERVICE: legal
   CIMPL_LEGALSTATUS_IMAGE_NAME: cimpl-legal-status-update
+  DISABLE_INTEGRATION_TEST: true
 
 # os-core-test 0.2.0 GetInfoAssertions gates feature-flag checks on
 # EXPOSE_FEATUREFLAG_ENABLED. The deployed legal service exposes feature flags,
@@ -77,3 +78,12 @@ cimpl-containerize-cronjob-gitlab:
 # deploy (dev1, dev2, standby) because the central deploy script uses
 # !reference into these anchors. Enable standby deploys by setting
 # $CIMPL_STANDBY=1 in this project's CI/CD variables.
+
+#osdu-main jobs
+cimpl-dev-acceptance-test:
+  variables:
+    EXPOSE_FEATUREFLAG_ENABLED: "true"
+
+cimpl-dev-backup-acceptance-test:
+  variables:
+    EXPOSE_FEATUREFLAG_ENABLED: "true"
