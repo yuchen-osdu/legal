@@ -41,6 +41,7 @@ cimpl-containerize-cronjob-gitlab:
       elif [[ "$CI_COMMIT_REF_NAME" == "$CI_DEFAULT_BRANCH" ]];
       then
         IMAGE_TAG="$CI_COMMIT_SHORT_SHA";
+        CHART_IMAGE_TAG="latest";
         CIMPL_HELM_TAG="latest"
         EXTRA_TAG="-t $CI_REGISTRY_IMAGE/$CIMPL_IMAGE_NAME:$CI_COMMIT_SHORT_SHA -t $CI_REGISTRY_IMAGE/$CIMPL_IMAGE_NAME:latest";
         EXTRA_BOOTSTRAP_TAG="-t $CI_REGISTRY_IMAGE/$CIMPL_IMAGE_BOOTSTRAP_NAME:$CI_COMMIT_SHORT_SHA -t $CI_REGISTRY_IMAGE/$CIMPL_IMAGE_BOOTSTRAP_NAME:latest";
@@ -54,20 +55,19 @@ cimpl-containerize-cronjob-gitlab:
 .cimpl_substitute_image_in_helm:
   script:
     - wget -q https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/bin/yq && chmod +x /usr/bin/yq
-    - IMAGE="$CI_REGISTRY_IMAGE/$CIMPL_IMAGE_NAME:$IMAGE_TAG" yq -i '.data.image = env(IMAGE)' $CIMPL_HELM_DEPLOYMENT_DIR/values.yaml
-    - yq -e '.data | has("bootstrapImage")' $CIMPL_HELM_DEPLOYMENT_DIR/values.yaml &>/dev/null && BOOTSTRAP_IMAGE="$CI_REGISTRY_IMAGE/$CIMPL_IMAGE_BOOTSTRAP_NAME:$IMAGE_TAG" yq -i '.data.bootstrapImage = env(BOOTSTRAP_IMAGE)' $CIMPL_HELM_DEPLOYMENT_DIR/values.yaml
-    # On the rolling default-branch chart, pin the status-update image to the
-    # mutable :latest tag (re-pushed every build). The registry cleanup policy
-    # retains only v.* tags, so a SHA pin here is purged and the CronJob lands
-    # in ImagePullBackOff. Release/tag charts keep the immutable tag.
+    # Rolling default-branch charts pin the mutable :latest image tag (pushed by
+    # the same pipeline) because registry cleanup policies purge per-commit SHA
+    # tags, which strands any chart that still references them. Tag and MR
+    # builds keep the exact IMAGE_TAG.
+    - IMAGE="$CI_REGISTRY_IMAGE/$CIMPL_IMAGE_NAME:${CHART_IMAGE_TAG:-$IMAGE_TAG}" yq -i '.data.image = env(IMAGE)' $CIMPL_HELM_DEPLOYMENT_DIR/values.yaml
+    - yq -e '.data | has("bootstrapImage")' $CIMPL_HELM_DEPLOYMENT_DIR/values.yaml &>/dev/null && BOOTSTRAP_IMAGE="$CI_REGISTRY_IMAGE/$CIMPL_IMAGE_BOOTSTRAP_NAME:${CHART_IMAGE_TAG:-$IMAGE_TAG}" yq -i '.data.bootstrapImage = env(BOOTSTRAP_IMAGE)' $CIMPL_HELM_DEPLOYMENT_DIR/values.yaml
+    - LEGALSTATUS_UPDATE_IMAGE="$CI_REGISTRY_IMAGE/$CIMPL_LEGALSTATUS_IMAGE_NAME:${CHART_IMAGE_TAG:-$IMAGE_TAG}" yq -i '.data.legalStatusUpdateImage = env(LEGALSTATUS_UPDATE_IMAGE)' $CIMPL_HELM_DEPLOYMENT_DIR/values.yaml
+    # A mutable tag needs Always: IfNotPresent leaves nodes on a cached :latest layer.
     - >
-      if [[ "$CI_COMMIT_REF_NAME" == "$CI_DEFAULT_BRANCH" ]];
+      if [[ -n "$CHART_IMAGE_TAG" ]];
       then
-        LEGALSTATUS_UPDATE_TAG="latest";
-      else
-        LEGALSTATUS_UPDATE_TAG="$IMAGE_TAG";
+        yq -i '.data.imagePullPolicy = "Always"' $CIMPL_HELM_DEPLOYMENT_DIR/values.yaml;
       fi
-    - LEGALSTATUS_UPDATE_IMAGE="$CI_REGISTRY_IMAGE/$CIMPL_LEGALSTATUS_IMAGE_NAME:$LEGALSTATUS_UPDATE_TAG" yq -i '.data.legalStatusUpdateImage = env(LEGALSTATUS_UPDATE_IMAGE)' $CIMPL_HELM_DEPLOYMENT_DIR/values.yaml
     - cat $CIMPL_HELM_DEPLOYMENT_DIR/values.yaml | grep -i image
 
 #standby (Blue-Green): no per-service overrides required.
