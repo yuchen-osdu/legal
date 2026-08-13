@@ -10,6 +10,10 @@ cimpl-acceptance-test:
   variables:
     EXPOSE_FEATUREFLAG_ENABLED: "true"
 
+cimpl-dev2-acceptance-test:
+  variables:
+    EXPOSE_FEATUREFLAG_ENABLED: "true"
+
 cimpl-containerize-cronjob-gitlab:
   extends: cimpl-containerize-gitlab
   variables:
