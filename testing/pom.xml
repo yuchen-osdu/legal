@@ -69,7 +69,6 @@
 	</licenses>
 	<modules>
 		<module>legal-test-core</module>
-		<module>legal-test-aws</module>
 		<module>legal-test-azure</module>
 		<module>legal-test-gc</module>
 		<module>legal-test-ibm</module>
