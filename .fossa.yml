@@ -28,10 +28,6 @@ analyze:
       type: mvn
       target: provider/legal-azure/pom.xml
       path: .
-    - name: legal-aws
-      type: mvn
-      target: provider/legal-aws/pom.xml
-      path: .
     - name: legal-ibm
       type: mvn
       target: provider/legal-ibm/pom.xml
