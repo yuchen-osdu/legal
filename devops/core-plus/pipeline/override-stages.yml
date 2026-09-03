@@ -3,18 +3,6 @@ variables:
   CIMPL_LEGALSTATUS_IMAGE_NAME: cimpl-legal-status-update
   DISABLE_INTEGRATION_TEST: true
 
-# os-core-test 0.2.0 GetInfoAssertions gates feature-flag checks on
-# EXPOSE_FEATUREFLAG_ENABLED. The deployed legal service exposes feature flags,
-# so the acceptance test must expect them (otherwise asserts null vs the live
-# FeatureFlagState list). Same fix applied to storage.
-cimpl-acceptance-test:
-  variables:
-    EXPOSE_FEATUREFLAG_ENABLED: "true"
-
-cimpl-dev2-acceptance-test:
-  variables:
-    EXPOSE_FEATUREFLAG_ENABLED: "true"
-
 cimpl-containerize-cronjob-gitlab:
   extends: cimpl-containerize-gitlab
   variables:
@@ -75,19 +63,20 @@ cimpl-containerize-cronjob-gitlab:
       fi
     - cat $CIMPL_HELM_DEPLOYMENT_DIR/values.yaml | grep -i image
 
-#standby (Blue-Green): no per-service overrides required.
-# This service inherits cimpl-standby-deploy from the central
-# cimpl-standby-rosa.yml template. The .cimpl_set_image_name and
-# .cimpl_substitute_image_in_helm overrides above already apply to every
-# deploy (dev1, dev2, standby) because the central deploy script uses
-# !reference into these anchors. Enable standby deploys by setting
-# $CIMPL_STANDBY=1 in this project's CI/CD variables.
-
 #osdu-main jobs
+
+# os-core-test 0.2.0 GetInfoAssertions gates feature-flag checks on
+# EXPOSE_FEATUREFLAG_ENABLED. The deployed legal service exposes feature flags,
+# so the acceptance test must expect them (otherwise asserts null vs the live
+# FeatureFlagState list). Same fix applied to storage.
 cimpl-dev-acceptance-test:
   variables:
     EXPOSE_FEATUREFLAG_ENABLED: "true"
 
 cimpl-dev-backup-acceptance-test:
+  variables:
+    EXPOSE_FEATUREFLAG_ENABLED: "true"
+
+cimpl-prod-acceptance-test:
   variables:
     EXPOSE_FEATUREFLAG_ENABLED: "true"

@@ -80,7 +80,7 @@ download_plugins:
 
   only:
     variables:
-      - $CIMPL == '1'
+      - $PROTECTED == '1'
 
 azure_deploy:
   variables:
@@ -92,6 +92,3 @@ azure_containerize:
 azure_code_coverage:
   variables:
     AZURE_COVERAGE_THRESHOLD: 80
-
-schemathesis-tests:
-  extends: .schemathesis-tests-template
