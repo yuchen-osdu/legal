@@ -14,7 +14,8 @@ variables:
   SAST_EXCLUDED_ANALYZERS: "spotbugs"
   ACCEPTANCE_TEST_DIR: "legal-acceptance-test"
 
-  CIMPL_OPENAPI_YAML_ROUTE: /api/legal/v1/api-docs.yaml
+  CIMPL_OPENAPI_CONFIG_ROUTE: /api/legal/v1/api-docs/swagger-config
+  SCHEMATHESIS_OPENAPI_YAML_ROUTE: /api/legal/v1/api-docs.yaml
 
 include:
   - project: "osdu/platform/ci-cd-pipelines"
