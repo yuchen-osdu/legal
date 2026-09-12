@@ -46,6 +46,14 @@ variables:
     - LEGALSTATUS_UPDATE_IMAGE="$CI_REGISTRY_IMAGE/$GC_LEGALSTATUS_IMAGE_NAME:$IMAGE_TAG" yq -i '.data.legalStatusUpdateImage = env(LEGALSTATUS_UPDATE_IMAGE)' $GC_HELM_DEPLOYMENT_DIR/values.yaml
     - cat $GC_HELM_DEPLOYMENT_DIR/values.yaml | grep -i image
 
+.gc_substitute_gcr_image_in_helm:
+  script:
+    - wget -q https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/bin/yq && chmod +x /usr/bin/yq
+    - IMAGE="$GC_GCR_REGISTRY/$GC_SERVICE/$IMAGE_NAME:$IMAGE_TAG" yq -i '.data.image = env(IMAGE)' $GC_HELM_DEPLOYMENT_DIR/values.yaml
+    - yq -e '.data | has("bootstrapImage")' $GC_HELM_DEPLOYMENT_DIR/values.yaml &>/dev/null && BOOTSTRAP_IMAGE="$GC_GCR_REGISTRY/$GC_SERVICE/$IMAGE_BOOTSTRAP_NAME:$IMAGE_TAG" yq -i '.data.bootstrapImage = env(BOOTSTRAP_IMAGE)' $GC_HELM_DEPLOYMENT_DIR/values.yaml
+    - LEGALSTATUS_UPDATE_IMAGE="$GC_GCR_REGISTRY/$GC_SERVICE/$GC_LEGALSTATUS_IMAGE_NAME:$IMAGE_TAG" yq -i '.data.legalStatusUpdateImage = env(LEGALSTATUS_UPDATE_IMAGE)' $GC_HELM_DEPLOYMENT_DIR/values.yaml
+    - cat $GC_HELM_DEPLOYMENT_DIR/values.yaml | grep -i image
+
 gc-containerize-cronjob-gitlab:
   extends: gc-containerize-gitlab
   variables:
