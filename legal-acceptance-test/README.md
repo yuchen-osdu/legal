@@ -75,9 +75,7 @@ Roles are defined in `src/test/resources/required-roles.json` (`enabled: true`).
 | service.entitlements.user |
 | service.legal.admin       |
 | service.legal.editor      |
-| service.legal.user        |
-| data.test1                |
-| data.integration.test     |
+| service.legal.user        | 
 
 ### Environment-specific tests
 
