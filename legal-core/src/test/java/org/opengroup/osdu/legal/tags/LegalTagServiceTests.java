@@ -587,6 +587,25 @@ public class LegalTagServiceTests {
         properties.setExtensionProperties(extensionPropertiesMap);
     }
 
+    @Test
+    public void test_attribute_match_returns_false_for_unknown_property() {
+        // An attribute that is readable on neither bean but contains "any" reaches the
+        // default branch of checkAttributeForMatch. It must report "no match" rather than
+        // raise NotReadablePropertyException, which the caller would see as HTTP 500.
+        LegalTag output = new LegalTag();
+        output.setName("opendes-osdu-testing-1");
+        Properties properties = new Properties();
+        properties.setCountryOfOrigin(Collections.singletonList("US"));
+        properties.setContractId("123450");
+        properties.setExpirationDate(Date.valueOf("2023-11-20"));
+        output.setProperties(properties);
+        output.setIsValid(true);
+        sut = createSut(output);
+
+        assertFalse(sut.checkAttributeForMatch("anything", "US", output));
+        assertFalse(sut.checkAttributeForMatch("company.any", "US", output));
+    }
+
     public void test_properties(String testQuery, Boolean expectFound) {
         sut = createSutWithExtensionProperties_test1();
 

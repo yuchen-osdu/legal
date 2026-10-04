@@ -485,6 +485,14 @@ public class LegalTagService {
       }
       default -> {
         log.debug(String.format("Attribute from properties: %s", attribute));
+        // An unknown attribute is a legitimate input: the caller may be searching the
+        // extension properties, which searchInLegalTag falls back to when nothing matches.
+        // Reading it without this guard raises NotReadablePropertyException, which surfaces
+        // to the caller as HTTP 500 instead of an empty result.
+        if (!beanWrapper.isReadableProperty(attribute)) {
+          log.debug(String.format("Attribute is not a readable property: %s", attribute));
+          return false;
+        }
         Object value = beanWrapper.getPropertyValue(attribute);
         log.debug(String.format("Attribute from properties: %s, Value: %s", attribute, value));
         return (value instanceof String && StringUtils.containsAnyIgnoreCase(value.toString().trim(), pattern));
