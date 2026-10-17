@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.opengroup.osdu.legal</groupId>
 		<artifactId>legal-service</artifactId>
-		<version>0.30.0-SNAPSHOT</version>
+		<version>${revision}</version>
 	</parent>
 
 	<artifactId>legal-core</artifactId>
@@ -140,7 +140,7 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
-					<argLine>@{jacocoArgLine} --add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.util=ALL-UNNAMED</argLine>
+					<argLine>@{jacocoArgLine} @{argLine} --add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.util=ALL-UNNAMED</argLine>
 					<useSystemClassLoader>false</useSystemClassLoader>
 					<threadCount>1</threadCount>
 				</configuration>

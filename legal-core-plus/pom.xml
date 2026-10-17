@@ -22,7 +22,7 @@
   <parent>
     <artifactId>legal-service</artifactId>
     <groupId>org.opengroup.osdu.legal</groupId>
-    <version>0.30.0-SNAPSHOT</version>
+    <version>${revision}</version>
   </parent>
 
   <artifactId>legal-core-plus</artifactId>
@@ -43,7 +43,7 @@
     <dependency>
       <groupId>org.opengroup.osdu.legal</groupId>
       <artifactId>legal-core</artifactId>
-      <version>0.30.0-SNAPSHOT</version>
+      <version>${revision}</version>
       <exclusions>
         <exclusion>
           <groupId>com.google.api-client</groupId>
@@ -130,7 +130,7 @@
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
       <artifactId>plexus-utils</artifactId>
-      <version>4.0.2</version>
+      <version>4.1.0</version>
       <scope>test</scope>
     </dependency>
 
@@ -165,26 +165,26 @@
       <artifactId>kotlin-stdlib-jdk8</artifactId>
       <version>1.9.22</version>
     </dependency>
-    <!-- Mapper\Driver core dependencies -->
+    <!-- Mapper / driver core dependencies (Java 25 releases). -->
     <dependency>
       <groupId>org.opengroup.osdu</groupId>
       <artifactId>os-oqm-core</artifactId>
-      <version>0.25.0-rc1</version>
+      <version>1.0.0</version>
     </dependency>
     <dependency>
       <groupId>org.opengroup.osdu</groupId>
       <artifactId>os-osm-core</artifactId>
-      <version>0.28.0</version>
+      <version>1.0.0</version>
     </dependency>
     <dependency>
       <groupId>org.opengroup.osdu</groupId>
       <artifactId>os-obm-core</artifactId>
-      <version>0.30.5</version>
+      <version>1.0.0</version>
     </dependency>
     <dependency>
       <groupId>org.opengroup.osdu</groupId>
       <artifactId>core-plus-common-lib</artifactId>
-      <version>0.24.0-rc2</version>
+      <version>1.0.0</version>
       <exclusions>
         <exclusion>
           <groupId>org.opengroup.osdu</groupId>
@@ -238,6 +238,9 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <argLine>@{argLine}</argLine>
+        </configuration>
         <dependencies>
           <dependency>
             <groupId>org.apache.maven.surefire</groupId>

@@ -8,7 +8,7 @@ os-legal-azure is a [Spring Boot](https://spring.io/projects/spring-boot) servic
 
 In order to run this service locally, you will need the following:
 
-- [Maven 3.8.0+](https://maven.apache.org/download.cgi)
+- [Maven 3.9.16+](https://maven.apache.org/download.cgi)
 - [Java 17](https://adoptopenjdk.net/)
 - Infrastructure dependencies, deployable through the relevant [infrastructure template](https://dev.azure.com/slb-des-ext-collaboration/open-data-ecosystem/_git/infrastructure-templates?path=%2Finfra&version=GBmaster&_a=contents)
 - While not a strict dependency, example commands in this document use [bash](https://www.gnu.org/software/bash/)
@@ -88,7 +88,7 @@ az keyvault secret show --vault-name $KEY_VAULT_NAME --name $KEY_VAULT_SECRET_NA
 Check that maven is installed:
 ```bash
 $ mvn --version
-Apache Maven 3.8.0
+Apache Maven 3.9.16
 Maven home: /usr/share/maven
 Java version: 17.0.7
 ...

@@ -2,15 +2,24 @@
 
 Official documentation is located at [https://osdu.pages.opengroup.org/platform/security-and-compliance/legal/](https://osdu.pages.opengroup.org/platform/security-and-compliance/legal/)
 
+## Prerequisites
+
+- [JDK 25](https://adoptium.net/)
+- [Maven 3.9.16+](https://maven.apache.org/download.cgi)
+
+Community / core-plus modules compile and run on Java 25. For core-plus local setup, see [legal-core-plus/README.md](./legal-core-plus/README.md).
+
 ## os-legal-azure
 
 The steps for running `os-legal-azure` can be found in the [Azure Implementation README.md file](./provider/legal-azure/README.md).
 
 ## os-legal-aws
 
-Instructions for running and testing this service can be found in the [AWS README.md file](./provider/legal-aws/README.md)
+The AWS provider has been removed from this repository.
 
-# os-legal-gcp
+## os-legal-gcp
+
+The GCP provider has been moved from this repository to [here](https://community.opengroup.org/osdu/platform/deployment-and-operations/base-containers-gcp/gc-osdu-services).
 
 ## Running integration tests
 Integration tests are located in a separate project for each cloud in the ```testing``` directory under the project root directory.
@@ -27,10 +36,6 @@ All the Swagger and OpenAPI related common properties are managed here [swagger.
 - `api.server.fullUrl.enabled=false` It will generate only the contextPath only
 - default value is false (Currently only in Azure it is enabled)
 [Reference]:(https://springdoc.org/faq.html#_how_is_server_url_generated) 
-
-### Google Cloud
-
-Instructions for running the Google Cloud integration tests can be found [here](./provider/legal-gc/README.md).
 
 ## License
 Copyright 2017-2019, Schlumberger
