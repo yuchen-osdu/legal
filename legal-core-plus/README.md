@@ -8,8 +8,8 @@ These instructions will get you a copy of the project up and running on your loc
 
 ### Prerequisites
 
-- [Maven 3.8.0+](https://maven.apache.org/download.cgi)
-- [JDK17](https://adoptopenjdk.net/)
+- [Maven 3.9.16+](https://maven.apache.org/download.cgi)
+- [JDK 25](https://adoptium.net/)
 - [Lombok 1.28 or later](https://projectlombok.org/setup/maven)
 
 # Features of implementation
@@ -64,9 +64,9 @@ Check that maven is installed:
 
 ```bash
 $ mvn --version
-Apache Maven 3.8.7
+Apache Maven 3.9.16
 Maven home: /usr/share/maven
-Java version: 17.0.7
+Java version: 25.0.1
 ...
 ```
 
