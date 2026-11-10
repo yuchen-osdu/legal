@@ -1,8 +1,8 @@
 package org.opengroup.osdu.legal.tags.dto;
 
+import jakarta.validation.constraints.NotNull;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.opengroup.osdu.core.common.model.legal.CountryCodes;
 import org.opengroup.osdu.core.common.model.legal.LegalTag;
@@ -28,11 +28,25 @@ import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@Schema(description = "Represents a single LegalTag")
+@Schema(description = "Represents a single LegalTag",
+        additionalProperties = Schema.AdditionalPropertiesValue.FALSE)
 public class LegalTagDto {
 
-    @Schema(description = "The name of the LegalTag", example = "OSDU-Private-EHCData")
+    /**
+     * OpenAPI bounds for LegalTag {@code name} (responses, path parameters, updates, batch).
+     * Matches runtime {@code @ValidName} (max 100), including any {@code {data-partition-id}-} prefix.
+     */
+    public static final int NAME_MIN_LENGTH = 3;
+    public static final int NAME_MAX_LENGTH = 100;
+    public static final String NAME_PATTERN = "^[-A-Za-z0-9]{3,100}$";
+
+    @NotNull
     @ValidName
+    @Schema(description = "The name of the LegalTag", example = "OSDU-Private-EHCData",
+            requiredMode = Schema.RequiredMode.REQUIRED,
+            pattern = NAME_PATTERN,
+            minLength = NAME_MIN_LENGTH,
+            maxLength = NAME_MAX_LENGTH)
     private String name = "";
 
     @Schema(description = "The description of the LegalTag")
@@ -40,7 +54,8 @@ public class LegalTagDto {
     @ValidDescription
     private String description = "";
 
-    @Schema(description = "LegalTag properties")
+    @Schema(description = "LegalTag properties", requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotNull
     @Valid
     private Properties properties = new Properties();
 

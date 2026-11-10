@@ -13,8 +13,11 @@ variables:
   SAST_EXCLUDED_ANALYZERS: "spotbugs"
   ACCEPTANCE_TEST_DIR: "legal-acceptance-test"
 
+  # Discover OpenAPI specs via springdoc swagger-config.
+  # Do not set CIMPL_OPENAPI_YAML_ROUTE or CIMPL_OPENAPI_SPEC_PATH — those bypass
+  # discovery and pin openapi-spec checks to a single route (ci-cd-pipelines#65).
+  # Schemathesis routes are set via .schemathesis-legal-matrix below.
   CIMPL_OPENAPI_CONFIG_ROUTE: /api/legal/v1/api-docs/swagger-config
-  SCHEMATHESIS_OPENAPI_YAML_ROUTE: /api/legal/v1/api-docs.yaml
 
 include:
   - project: "osdu/platform/ci-cd-pipelines"
@@ -78,3 +81,39 @@ download_plugins:
   only:
     variables:
       - $PROTECTED == '1'
+
+# Schemathesis jobs load schemathesis-tests/schemathesis.toml via
+# SCHEMATHESIS_CONFIG_FILE when present (see reporting/schemathesis.yml).
+.schemathesis-legal-common:
+  variables:
+    # Floating tag, same as ci-cd-pipelines reporting/schemathesis.yml.
+    SCHEMATHESIS_BASE_IMAGE: community.opengroup.org:5555/osdu/platform/system/sdks/schemathesis-base:latest
+    # The shared runner's 120s default overrides TOML; preserve Legal's 30s timeout.
+    SCHEMATHESIS_REQUEST_TIMEOUT: "30"
+
+.schemathesis-legal-matrix:
+  parallel:
+    matrix:
+      - SCHEMATHESIS_OPENAPI_YAML_ROUTE:
+          - "/api/legal/v1/api-docs.yaml"
+
+schemathesis-dev-tests:
+  extends:
+    - .cimpl-dev-variables
+    - .schemathesis-osdu-main-tests-template
+    - .schemathesis-legal-common
+    - .schemathesis-legal-matrix
+
+schemathesis-dev-backup-tests:
+  extends:
+    - .cimpl-dev-backup-variables
+    - .schemathesis-osdu-main-tests-template
+    - .schemathesis-legal-common
+    - .schemathesis-legal-matrix
+
+schemathesis-prod-tests:
+  extends:
+    - .cimpl-prod-variables
+    - .schemathesis-osdu-main-tests-template
+    - .schemathesis-legal-common
+    - .schemathesis-legal-matrix
