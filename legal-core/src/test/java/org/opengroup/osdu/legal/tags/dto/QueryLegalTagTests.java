@@ -1,8 +1,9 @@
 package org.opengroup.osdu.legal.tags.dto;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.DeserializationFeature;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.DatabindException;
+import tools.jackson.databind.ObjectMapper;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -20,13 +21,14 @@ import static org.opengroup.osdu.legal.util.LegalTagRequestTestData.queryBody;
 
 public class QueryLegalTagTests {
 
-    private final ObjectMapper objectMapper = new ObjectMapper()
-            .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+    private final ObjectMapper objectMapper = JsonMapper.builder()
+            .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+            .build();
 
     @ParameterizedTest
     @MethodSource("invalidQueryBodies")
     public void should_rejectSchemaInvalidTypes_when_deserializingQueryBody(Map<String, Object> body) {
-        assertThrows(JsonMappingException.class, () -> objectMapper.readValue(json(body), QueryLegalTag.class));
+        assertThrows(DatabindException.class, () -> objectMapper.readValue(json(body), QueryLegalTag.class));
     }
 
     @Test

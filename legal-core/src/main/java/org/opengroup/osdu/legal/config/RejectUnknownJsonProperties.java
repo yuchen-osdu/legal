@@ -1,7 +1,7 @@
 package org.opengroup.osdu.legal.config;
 
-import com.fasterxml.jackson.core.JsonLocation;
-import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
+import tools.jackson.core.TokenStreamLocation;
+import tools.jackson.databind.exc.UnrecognizedPropertyException;
 
 import java.util.Collections;
 
@@ -26,7 +26,7 @@ public final class RejectUnknownJsonProperties {
                 "Unrecognized field \"%s\" (class %s), not marked as ignorable",
                 name, referringClass.getName());
         UnrecognizedPropertyException exception = new UnrecognizedPropertyException(
-                null, message, JsonLocation.NA, referringClass, name, Collections.emptySet());
+                null, message, TokenStreamLocation.NA, referringClass, name, Collections.emptySet());
         exception.prependPath(bean, name);
         throw exception;
     }

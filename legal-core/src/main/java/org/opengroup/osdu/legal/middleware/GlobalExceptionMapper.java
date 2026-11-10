@@ -14,7 +14,7 @@
 
 package org.opengroup.osdu.legal.middleware;
 
-import com.fasterxml.jackson.databind.JsonMappingException;
+import tools.jackson.core.JacksonException;
 import java.util.Locale;
 import java.util.Map;
 import java.util.StringJoiner;
@@ -25,8 +25,7 @@ import org.springframework.beans.TypeMismatchException;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.context.request.ServletWebRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
+import tools.jackson.databind.exc.UnrecognizedPropertyException;
 import com.google.gson.Gson;
 
 import java.io.IOException;
@@ -40,6 +39,7 @@ import jakarta.validation.ValidationException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.tomcat.util.http.InvalidParameterException;
 import org.opengroup.osdu.core.common.logging.JaxRsDpsLog;
 import org.opengroup.osdu.core.common.model.http.AppException;
 import org.springframework.core.Ordered;
@@ -62,7 +62,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 public class GlobalExceptionMapper extends ResponseEntityExceptionHandler {
 
 	private static final Gson gson = new Gson();
-	private static final Pattern UNRECOGNIZED_FIELD = Pattern.compile("Unrecognized field \"([^\"]+)\"");
+	private static final Pattern UNRECOGNIZED_FIELD = Pattern.compile("Unrecognized (?:field|property) \"([^\"]+)\"");
 	private static final Pattern JAVA_TYPE = Pattern.compile("(?:[a-z_][a-z0-9_]*\\.)+[A-Za-z_][A-Za-z0-9_$.<>]*");
 
 	@Inject
@@ -79,8 +79,8 @@ public class GlobalExceptionMapper extends ResponseEntityExceptionHandler {
 				new AppException(HttpStatus.NOT_FOUND.value(), "Resource not found.", e.getMessage()));
 	}
 
-	@ExceptionHandler(JsonProcessingException.class)
-	protected ResponseEntity<Object> handleJsonProcessingException(JsonProcessingException e) {
+	@ExceptionHandler(JacksonException.class)
+	protected ResponseEntity<Object> handleJacksonException(JacksonException e) {
 		return this.getErrorResponse(
 				new AppException(HttpStatus.BAD_REQUEST.value(), "Bad JSON format", e.getMessage()));
 	}
@@ -102,6 +102,17 @@ public class GlobalExceptionMapper extends ResponseEntityExceptionHandler {
 	protected ResponseEntity<Object> handleValidationException(ValidationException e) {
 		return this.getErrorResponse(
 				new AppException(HttpStatus.BAD_REQUEST.value(), "Validation error.", e.getMessage()));
+	}
+
+	// Tomcat 11 throws this lazily when the controller reads a malformed query string
+	// (e.g. a parameter with an empty name); Tomcat 10.1 silently skipped such chunks.
+	@ExceptionHandler(InvalidParameterException.class)
+	protected ResponseEntity<Object> handleInvalidParameterException(InvalidParameterException e) {
+		int status = e.getErrorCode() >= 400 && e.getErrorCode() < 500
+				? e.getErrorCode() : HttpStatus.BAD_REQUEST.value();
+		return this.getErrorResponse(
+				new AppException(status, "Invalid request parameters.",
+						"The request contains malformed query or form parameters.", e));
 	}
 
 	@ExceptionHandler(ConstraintViolationException.class)
@@ -149,7 +160,7 @@ public class GlobalExceptionMapper extends ResponseEntityExceptionHandler {
 	 * ({@code java.lang.String}, DTO classes); those stay out of the response.
 	 */
 	static String readableJsonMessage(HttpMessageNotReadableException e) {
-		JsonMappingException mappingException = findJsonMappingException(e);
+		JacksonException mappingException = findJacksonException(e);
 		if (mappingException != null) {
 			String path = jsonFieldPath(mappingException);
 			String reason = shortJsonReason(mappingException.getOriginalMessage());
@@ -173,11 +184,11 @@ public class GlobalExceptionMapper extends ResponseEntityExceptionHandler {
 		return "Failed to read request";
 	}
 
-	private static String jsonFieldPath(JsonMappingException exception) {
+	private static String jsonFieldPath(JacksonException exception) {
 		StringJoiner path = new StringJoiner(".");
-		for (JsonMappingException.Reference reference : exception.getPath()) {
-			if (reference.getFieldName() != null) {
-				path.add(reference.getFieldName());
+		for (JacksonException.Reference reference : exception.getPath()) {
+			if (reference.getPropertyName() != null) {
+				path.add(reference.getPropertyName());
 			} else if (reference.getIndex() >= 0) {
 				path.add(Integer.toString(reference.getIndex()));
 			}
@@ -229,10 +240,10 @@ public class GlobalExceptionMapper extends ResponseEntityExceptionHandler {
 		return false;
 	}
 
-	private static JsonMappingException findJsonMappingException(Throwable throwable) {
+	private static JacksonException findJacksonException(Throwable throwable) {
 		Throwable current = throwable;
 		while (current != null) {
-			if (current instanceof JsonMappingException mappingException) {
+			if (current instanceof JacksonException mappingException) {
 				return mappingException;
 			}
 			current = current.getCause();

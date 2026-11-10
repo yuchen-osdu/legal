@@ -16,7 +16,7 @@
 
 package org.opengroup.osdu.legal.tags.model;
 
-import com.fasterxml.jackson.databind.JsonMappingException;
+import tools.jackson.databind.DatabindException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
@@ -25,7 +25,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.Map;
 import java.util.Set;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 import org.opengroup.osdu.legal.tags.dto.UpdateLegalTag;
 import static org.opengroup.osdu.legal.util.JsonTestUtils.json;
 import static org.opengroup.osdu.legal.util.JsonTestUtils.withField;
@@ -89,7 +89,7 @@ public class UpdateLegalTagTests {
 
     @Test
     public void should_rejectNullExtensionProperties_when_deserializingUpdateBody() {
-        assertThrows(JsonMappingException.class, () -> objectMapper.readValue(
+        assertThrows(DatabindException.class, () -> objectMapper.readValue(
                 json(withField(updateBody(), "extensionProperties", null)),
                 UpdateLegalTag.class));
     }
@@ -117,7 +117,7 @@ public class UpdateLegalTagTests {
 
     @Test
     public void should_rejectNullDescription_when_deserializingUpdateBody() {
-        assertThrows(JsonMappingException.class, () -> objectMapper.readValue(
+        assertThrows(DatabindException.class, () -> objectMapper.readValue(
                 json(withField(withField(updateBody(), "description", null), "extensionProperties", Map.of())),
                 UpdateLegalTag.class));
     }
@@ -133,7 +133,7 @@ public class UpdateLegalTagTests {
 
     @Test
     public void should_rejectUnknownProperty_when_deserializingUpdateBody() {
-        assertThrows(JsonMappingException.class, () -> objectMapper.readValue(
+        assertThrows(DatabindException.class, () -> objectMapper.readValue(
                 json(withField(updateBody(), "x-schemathesis-unknown-property", 42)),
                 UpdateLegalTag.class));
     }

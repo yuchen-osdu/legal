@@ -1,7 +1,8 @@
 package org.opengroup.osdu.legal.tags.dto;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
-import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
+import tools.jackson.databind.exc.UnrecognizedPropertyException;
 import jakarta.validation.constraints.NotNull;
 import org.opengroup.osdu.legal.config.RejectUnknownJsonProperties;
 import org.opengroup.osdu.legal.config.StrictObjectMapDeserializer;
@@ -15,7 +16,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import tools.jackson.databind.annotation.JsonDeserialize;
 import org.opengroup.osdu.core.common.model.legal.serialization.ExpirationDateDeserializer;
 
 import static org.opengroup.osdu.core.common.util.SerializationUtils.EXPIRATION_DATE_FORMAT;
@@ -32,7 +33,8 @@ import static org.opengroup.osdu.core.common.util.SerializationUtils.EXPIRATION_
  */
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
+// Jackson 3 would otherwise bind through the all-args constructor and drop the field defaults.
+@NoArgsConstructor(onConstructor_ = @JsonCreator)
 @Schema(description = "The model to update an existing LegalTag",
         additionalProperties = Schema.AdditionalPropertiesValue.FALSE)
 public class UpdateLegalTag {

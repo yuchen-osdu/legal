@@ -1,7 +1,7 @@
 package org.opengroup.osdu.legal.middleware;
 
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.DatabindException;
+import tools.jackson.databind.ObjectMapper;
 import java.util.List;
 import java.util.Map;
 import org.opengroup.osdu.legal.tags.dto.CreateLegalTag;
@@ -24,6 +24,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.mockito.InjectMocks;
+import org.apache.tomcat.util.http.InvalidParameterException;
 import org.mockito.Mock;
 import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -43,8 +44,8 @@ import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.context.request.WebRequest;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.exc.UnrecognizedPropertyException;
 
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
@@ -66,7 +67,7 @@ public class GlobalExceptionMapperTests {
 		AppException exception = new AppException(409, "any reason", "any message");
 
 		ResponseEntity<Object> response = sut.handleAppException(exception);
-		assertEquals(409, response.getStatusCodeValue());
+		assertEquals(409, response.getStatusCode().value());
 		// assertEquals(MediaType.APPLICATION_JSON,
 		// response.getHeaders().getContentType().toString());
 		AppError expectedError = new AppError(409, "any reason", "any message");
@@ -79,7 +80,7 @@ public class GlobalExceptionMapperTests {
 		AppException exception = new AppException(302, "any reason", "any message");
 
 		ResponseEntity<Object> response = sut.handleAppException(exception);
-		assertEquals(302, response.getStatusCodeValue());
+		assertEquals(302, response.getStatusCode().value());
 	}
 
 	@Test
@@ -89,7 +90,7 @@ public class GlobalExceptionMapperTests {
 
 		ResponseEntity<Object> response = sut.handleAppException(exception);
 
-		assertEquals(302, response.getStatusCodeValue());
+		assertEquals(302, response.getStatusCode().value());
 		// assertEquals(MediaType.APPLICATION_JSON,
 		// response.getHeaders().getContentType().toString());
 		// assertEquals("any message", response.getBody());
@@ -100,7 +101,7 @@ public class GlobalExceptionMapperTests {
 
 		NotFoundException exception = new NotFoundException("any message");
 		ResponseEntity<Object> response = sut.handleNotFoundException(exception);
-		assertEquals(404, response.getStatusCodeValue());
+		assertEquals(404, response.getStatusCode().value());
 		// assertEquals(MediaType.APPLICATION_JSON,
 		// response.getHeaders().getContentType().toString());
 		// assertEquals(null, response.getBody().getMessage());
@@ -113,7 +114,7 @@ public class GlobalExceptionMapperTests {
 		HttpRequestMethodNotSupportedException exception = new HttpRequestMethodNotSupportedException("any message");
 		ResponseEntity<Object> response = sut.handleHttpRequestMethodNotSupported(exception, httpHeaders,
 				HttpStatus.METHOD_NOT_ALLOWED, webRequest);
-		assertEquals(405, response.getStatusCodeValue());
+		assertEquals(405, response.getStatusCode().value());
 	}
 
 	@Test
@@ -123,7 +124,7 @@ public class GlobalExceptionMapperTests {
 		ResponseEntity<Object> unsupportedResponse = sut.handleExceptionInternal(
 				unsupported, null, new HttpHeaders(), HttpStatus.UNSUPPORTED_MEDIA_TYPE, mock(WebRequest.class));
 
-		assertEquals(415, unsupportedResponse.getStatusCodeValue());
+		assertEquals(415, unsupportedResponse.getStatusCode().value());
 		AppError unsupportedError = (AppError) unsupportedResponse.getBody();
 		assertEquals(415, unsupportedError.getCode());
 		assertEquals(HttpStatus.UNSUPPORTED_MEDIA_TYPE.getReasonPhrase(), unsupportedError.getReason());
@@ -133,7 +134,7 @@ public class GlobalExceptionMapperTests {
 		ResponseEntity<Object> notAcceptableResponse = sut.handleExceptionInternal(
 				notAcceptable, null, new HttpHeaders(), HttpStatus.NOT_ACCEPTABLE, mock(WebRequest.class));
 
-		assertEquals(406, notAcceptableResponse.getStatusCodeValue());
+		assertEquals(406, notAcceptableResponse.getStatusCode().value());
 		AppError notAcceptableError = (AppError) notAcceptableResponse.getBody();
 		assertEquals(406, notAcceptableError.getCode());
 		assertEquals(HttpStatus.NOT_ACCEPTABLE.getReasonPhrase(), notAcceptableError.getReason());
@@ -150,7 +151,7 @@ public class GlobalExceptionMapperTests {
 		when(bindingResult.getAllErrors()).thenReturn(Collections.emptyList());
 		ResponseEntity<Object> response = sut.handleMethodArgumentNotValid(exception, httpHeaders,
 				HttpStatus.BAD_REQUEST, webRequest);
-		assertEquals(400, response.getStatusCodeValue());
+		assertEquals(400, response.getStatusCode().value());
 		AppError error = (AppError) response.getBody();
 		assertEquals("Validation error.", error.getReason());
 		assertEquals(json(Map.of("errors", List.of("Invalid payload"))), error.getMessage());
@@ -172,7 +173,7 @@ public class GlobalExceptionMapperTests {
 		ResponseEntity<Object> response = sut.handleMethodArgumentNotValid(exception, httpHeaders,
 				HttpStatus.BAD_REQUEST, webRequest);
 
-		assertEquals(400, response.getStatusCodeValue());
+		assertEquals(400, response.getStatusCode().value());
 	
 		AppError error = (AppError) response.getBody();
 		assertEquals("Validation error.", error.getReason());
@@ -189,7 +190,7 @@ public class GlobalExceptionMapperTests {
 		Exception exception = new Exception("any message");
 
 		ResponseEntity<Object> response = sut.handleGeneralException(exception);
-		assertEquals(500, response.getStatusCodeValue());
+		assertEquals(500, response.getStatusCode().value());
 		// assertEquals(MediaType.APPLICATION_JSON,
 		// response.getHeaders().getContentType().toString());
 		// assertEquals("An unknown error has occurred.",
@@ -211,28 +212,38 @@ public class GlobalExceptionMapperTests {
 
 		ResponseEntity response = sut.handleIOException(ioException);
 
-		assertEquals(org.apache.http.HttpStatus.SC_SERVICE_UNAVAILABLE, response.getStatusCodeValue());
+		assertEquals(org.apache.http.HttpStatus.SC_SERVICE_UNAVAILABLE, response.getStatusCode().value());
 	}
 
 	@Test
-	public void should_returnBadRequest_when_JsonProcessingExceptionIsCaptured() {
-		JsonProcessingException jsonProcessingException = mock(JsonProcessingException.class);
-		when(jsonProcessingException.getMessage()).thenReturn("JsonProcessing exception");
+	public void should_returnBadRequest_when_TomcatInvalidParameterExceptionIsCaptured() {
+		InvalidParameterException exception = new InvalidParameterException(
+				"Invalid chunk starting at byte [0] and ending at byte [4] with a value of [=abc] ignored");
 
-		ResponseEntity response = sut.handleJsonProcessingException(jsonProcessingException);
+		ResponseEntity response = sut.handleInvalidParameterException(exception);
 
-		assertEquals(org.apache.http.HttpStatus.SC_BAD_REQUEST, response.getStatusCodeValue());
+		assertEquals(org.apache.http.HttpStatus.SC_BAD_REQUEST, response.getStatusCode().value());
+	}
+
+	@Test
+	public void should_returnBadRequest_when_JacksonExceptionIsCaptured() {
+		JacksonException jacksonException = mock(JacksonException.class);
+		when(jacksonException.getMessage()).thenReturn("JsonProcessing exception");
+
+		ResponseEntity response = sut.handleJacksonException(jacksonException);
+
+		assertEquals(org.apache.http.HttpStatus.SC_BAD_REQUEST, response.getStatusCode().value());
 	}
 
 	@Test
 	public void should_includeJsonPath_when_HttpMessageNotReadableFromMappingFailure() throws Exception {
-		JsonMappingException mappingException;
+		DatabindException mappingException;
 		try {
 			new ObjectMapper().readValue(
 					json(withField(withField(createBody(), "description", null), "properties", Map.of())),
 					CreateLegalTag.class);
 			throw new AssertionError("expected mapping failure");
-		} catch (JsonMappingException e) {
+		} catch (DatabindException e) {
 			mappingException = e;
 		}
 
@@ -253,11 +264,11 @@ public class GlobalExceptionMapperTests {
 
 	@Test
 	public void should_hideJavaType_when_HttpMessageNotReadableIsWrongJsonType() throws Exception {
-		JsonMappingException mappingException;
+		DatabindException mappingException;
 		try {
 			new ObjectMapper().readValue(json(Map.of("name", 12345)), CreateLegalTag.class);
 			throw new AssertionError("expected mapping failure");
-		} catch (JsonMappingException e) {
+		} catch (DatabindException e) {
 			mappingException = e;
 		}
 
@@ -271,7 +282,7 @@ public class GlobalExceptionMapperTests {
 
 	@Test
 	public void should_includeArrayIndex_when_HttpMessageNotReadableHasNestedPath() {
-		JsonMappingException cause = assertThrows(JsonMappingException.class,
+		DatabindException cause = assertThrows(DatabindException.class,
 				() -> new ObjectMapper().readValue(json(Map.of("names", List.of(false))), RequestLegalTags.class));
 
 		String message = GlobalExceptionMapper.readableJsonMessage(
@@ -295,7 +306,7 @@ public class GlobalExceptionMapperTests {
 
 		ResponseEntity response = sut.handleUnrecognizedPropertyException(unrecognizedPropertyException);
 
-		assertEquals(org.apache.http.HttpStatus.SC_BAD_REQUEST, response.getStatusCodeValue());
+		assertEquals(org.apache.http.HttpStatus.SC_BAD_REQUEST, response.getStatusCode().value());
 	}
 
 	@Test
@@ -305,7 +316,7 @@ public class GlobalExceptionMapperTests {
 
 		ResponseEntity response = sut.handleAccessDeniedException(accessDeniedException);
 
-		assertEquals(org.apache.http.HttpStatus.SC_FORBIDDEN, response.getStatusCodeValue());
+		assertEquals(org.apache.http.HttpStatus.SC_FORBIDDEN, response.getStatusCode().value());
 	}
 
 	@Test
@@ -315,7 +326,7 @@ public class GlobalExceptionMapperTests {
 
 		ResponseEntity response = sut.handleValidationException(validationException);
 
-		assertEquals(org.apache.http.HttpStatus.SC_BAD_REQUEST, response.getStatusCodeValue());
+		assertEquals(org.apache.http.HttpStatus.SC_BAD_REQUEST, response.getStatusCode().value());
 	}
 
 	@Test
@@ -329,7 +340,7 @@ public class GlobalExceptionMapperTests {
 
 		ResponseEntity response = sut.handleConstraintValidationException(constraintViolationException);
 
-		assertEquals(org.apache.http.HttpStatus.SC_BAD_REQUEST, response.getStatusCodeValue());
+		assertEquals(org.apache.http.HttpStatus.SC_BAD_REQUEST, response.getStatusCode().value());
 		AppError error = (AppError) response.getBody();
 		assertEquals("Validation error.", error.getReason());
 		assertEquals(json(Map.of("errors", List.of("custom constraint validation"))), error.getMessage());
@@ -342,7 +353,7 @@ public class GlobalExceptionMapperTests {
 
 		ResponseEntity response = sut.handleConstraintValidationException(constraintViolationException);
 
-		assertEquals(org.apache.http.HttpStatus.SC_BAD_REQUEST, response.getStatusCodeValue());
+		assertEquals(org.apache.http.HttpStatus.SC_BAD_REQUEST, response.getStatusCode().value());
 		AppError error = (AppError) response.getBody();
 		assertEquals("Validation error.", error.getReason());
 		assertEquals(json(Map.of("errors", List.of("Invalid payload"))), error.getMessage());

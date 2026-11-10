@@ -1,10 +1,11 @@
 package org.opengroup.osdu.legal.tags.dto;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.annotation.Nulls;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
+import tools.jackson.databind.annotation.JsonDeserialize;
+import tools.jackson.databind.exc.UnrecognizedPropertyException;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import jakarta.validation.constraints.Min;
 import org.opengroup.osdu.core.common.model.storage.validation.ValidationDoc;
@@ -23,7 +24,8 @@ import static org.opengroup.osdu.legal.Constants.LEGAL_QUERY_API_UNION_OPERATOR;
 
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
+// Jackson 3 would otherwise bind through the all-args constructor and drop the field defaults.
+@NoArgsConstructor(onConstructor_ = @JsonCreator)
 @Schema(description = "Represents the Search Query objects for Legaltags.",
         additionalProperties = Schema.AdditionalPropertiesValue.FALSE)
 public class QueryLegalTag {
