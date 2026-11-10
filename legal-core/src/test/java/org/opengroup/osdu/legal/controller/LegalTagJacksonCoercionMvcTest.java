@@ -1,7 +1,8 @@
 package org.opengroup.osdu.legal.controller;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.DeserializationFeature;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.databind.ObjectMapper;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -23,7 +24,7 @@ import org.opengroup.osdu.legal.logging.AuditLogger;
 import org.opengroup.osdu.legal.middleware.GlobalExceptionMapper;
 import org.opengroup.osdu.legal.tags.LegalTagService;
 import org.springframework.http.MediaType;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -69,8 +70,8 @@ public class LegalTagJacksonCoercionMvcTest {
 
         mockMvc = MockMvcBuilders.standaloneSetup(controller)
                 .setControllerAdvice(exceptionMapper)
-                .setMessageConverters(new MappingJackson2HttpMessageConverter(
-                        new ObjectMapper().disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)))
+                .setMessageConverters(new JacksonJsonHttpMessageConverter(
+                        JsonMapper.builder().disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES).build()))
                 .build();
     }
 

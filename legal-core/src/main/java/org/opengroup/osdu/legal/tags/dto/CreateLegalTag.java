@@ -1,8 +1,9 @@
 package org.opengroup.osdu.legal.tags.dto;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
+import tools.jackson.databind.annotation.JsonDeserialize;
+import tools.jackson.databind.exc.UnrecognizedPropertyException;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -40,7 +41,8 @@ import java.util.Set;
  */
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
+// Jackson 3 would otherwise bind through the all-args constructor and drop the field defaults.
+@NoArgsConstructor(onConstructor_ = @JsonCreator)
 @Schema(description = "Request body for creating a LegalTag",
         additionalProperties = Schema.AdditionalPropertiesValue.FALSE)
 public class CreateLegalTag {

@@ -1,10 +1,11 @@
 package org.opengroup.osdu.legal.tags.dto;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.annotation.Nulls;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
+import tools.jackson.databind.annotation.JsonDeserialize;
+import tools.jackson.databind.exc.UnrecognizedPropertyException;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import org.opengroup.osdu.legal.config.RejectUnknownJsonProperties;
 import org.opengroup.osdu.legal.config.StrictStringDeserializer;
@@ -22,7 +23,8 @@ import java.util.List;
 
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
+// Jackson 3 would otherwise bind through the all-args constructor and drop the field defaults.
+@NoArgsConstructor(onConstructor_ = @JsonCreator)
 @Schema(description = "The model to retrieve multiple LegalTags in batch.",
         additionalProperties = Schema.AdditionalPropertiesValue.FALSE)
 public class RequestLegalTags {

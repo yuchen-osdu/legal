@@ -1,7 +1,7 @@
 package org.opengroup.osdu.legal.tags.dto;
 
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.DatabindException;
+import tools.jackson.databind.ObjectMapper;
 import java.util.Arrays;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
@@ -21,7 +21,7 @@ public class CreateLegalTagTests {
 
     @Test
     public void should_rejectNullExtensionProperties_when_deserializingCreateBody() {
-        assertThrows(JsonMappingException.class, () -> objectMapper.readValue(
+        assertThrows(DatabindException.class, () -> objectMapper.readValue(
                 json(withField(createBody(), "properties", withField(createProperties(), "extensionProperties", null))),
                 CreateLegalTag.class));
     }
@@ -39,21 +39,21 @@ public class CreateLegalTagTests {
 
     @Test
     public void should_rejectNullCountryOfOrigin_when_deserializingCreateBody() {
-        assertThrows(JsonMappingException.class, () -> objectMapper.readValue(
+        assertThrows(DatabindException.class, () -> objectMapper.readValue(
                 json(withField(createBody(), "properties", withField(createProperties(), "countryOfOrigin", null))),
                 CreateLegalTag.class));
     }
 
     @Test
     public void should_rejectBooleanOriginator_when_deserializingCreateBody() {
-        assertThrows(JsonMappingException.class, () -> objectMapper.readValue(
+        assertThrows(DatabindException.class, () -> objectMapper.readValue(
                 json(withField(createBody(), "properties", withField(createProperties(), "originator", false))),
                 CreateLegalTag.class));
     }
 
     @Test
     public void should_rejectNullDescription_when_deserializingCreateBody() {
-        assertThrows(JsonMappingException.class, () -> objectMapper.readValue(
+        assertThrows(DatabindException.class, () -> objectMapper.readValue(
                 json(withField(createBody(), "description", null)),
                 CreateLegalTag.class));
     }
@@ -71,14 +71,14 @@ public class CreateLegalTagTests {
 
     @Test
     public void should_rejectUnknownPropertyOnProperties_when_deserializingCreateBody() {
-        assertThrows(JsonMappingException.class, () -> objectMapper.readValue(
+        assertThrows(DatabindException.class, () -> objectMapper.readValue(
                 json(withField(createBody(), "properties", withField(createProperties(), "x-schemathesis-unknown-property", 42))),
                 CreateLegalTag.class));
     }
 
     @Test
     public void should_rejectUnknownPropertyOnBody_when_deserializingCreateBody() {
-        assertThrows(JsonMappingException.class, () -> objectMapper.readValue(
+        assertThrows(DatabindException.class, () -> objectMapper.readValue(
                 json(withField(createBody(), "x-schemathesis-unknown-property", 42)),
                 CreateLegalTag.class));
     }

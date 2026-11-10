@@ -1,7 +1,7 @@
 package org.opengroup.osdu.legal.tags.dto;
 
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.DatabindException;
+import tools.jackson.databind.ObjectMapper;
 import java.util.Collections;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeAll;
@@ -71,14 +71,14 @@ public class RequestLegalTagsTests {
 
     @Test
     public void should_rejectNonStringItems_when_deserializingNamesArray() {
-        assertThrows(JsonMappingException.class, () -> objectMapper.readValue(json(Map.of("names", List.of(false))), RequestLegalTags.class));
-        assertThrows(JsonMappingException.class, () -> objectMapper.readValue(json(Map.of("names", List.of(123))), RequestLegalTags.class));
-        assertThrows(JsonMappingException.class, () -> objectMapper.readValue(json(Map.of("names", List.of(Map.of()))), RequestLegalTags.class));
-        assertThrows(JsonMappingException.class, () -> objectMapper.readValue(json(Map.of("names", Collections.singletonList(null))), RequestLegalTags.class));
-        assertThrows(JsonMappingException.class, () -> objectMapper.readValue(json(withField(Map.of(), "names", null)), RequestLegalTags.class));
-        assertThrows(JsonMappingException.class, () -> objectMapper.readValue(json(Map.of("names", false)), RequestLegalTags.class));
-        assertThrows(JsonMappingException.class, () -> objectMapper.readValue(json(Map.of("names", Map.of())), RequestLegalTags.class));
-        assertThrows(JsonMappingException.class, () -> objectMapper.readValue(json(Map.of("names", "abc")), RequestLegalTags.class));
+        assertThrows(DatabindException.class, () -> objectMapper.readValue(json(Map.of("names", List.of(false))), RequestLegalTags.class));
+        assertThrows(DatabindException.class, () -> objectMapper.readValue(json(Map.of("names", List.of(123))), RequestLegalTags.class));
+        assertThrows(DatabindException.class, () -> objectMapper.readValue(json(Map.of("names", List.of(Map.of()))), RequestLegalTags.class));
+        assertThrows(DatabindException.class, () -> objectMapper.readValue(json(Map.of("names", Collections.singletonList(null))), RequestLegalTags.class));
+        assertThrows(DatabindException.class, () -> objectMapper.readValue(json(withField(Map.of(), "names", null)), RequestLegalTags.class));
+        assertThrows(DatabindException.class, () -> objectMapper.readValue(json(Map.of("names", false)), RequestLegalTags.class));
+        assertThrows(DatabindException.class, () -> objectMapper.readValue(json(Map.of("names", Map.of())), RequestLegalTags.class));
+        assertThrows(DatabindException.class, () -> objectMapper.readValue(json(Map.of("names", "abc")), RequestLegalTags.class));
     }
 
     @Test
@@ -104,7 +104,7 @@ public class RequestLegalTagsTests {
 
     @Test
     public void should_rejectUnknownProperty_when_deserializing() {
-        assertThrows(JsonMappingException.class, () -> objectMapper.readValue(
+        assertThrows(DatabindException.class, () -> objectMapper.readValue(
                 json(Map.of("names", List.of("OSDU-Private-USA-EHC"), "x-schemathesis-unknown-property", 42)),
                 RequestLegalTags.class));
     }

@@ -1,5 +1,6 @@
 package org.opengroup.osdu.legal.tags.dto;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import jakarta.validation.constraints.NotNull;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -25,7 +26,8 @@ import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
  */
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
+// Jackson 3 would otherwise bind through the all-args constructor and drop the field defaults.
+@NoArgsConstructor(onConstructor_ = @JsonCreator)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Schema(description = "Represents a single LegalTag",

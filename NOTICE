@@ -32,7 +32,6 @@ The following software have components provided under the terms of this license:
 - Byte Buddy (without dependencies) (from https://bytebuddy.net/, https://repo1.maven.org/maven2/net/bytebuddy/byte-buddy)
 - Byte Buddy Java agent (from https://bytebuddy.net/, https://repo1.maven.org/maven2/net/bytebuddy/byte-buddy-agent)
 - ClassMate (from http://github.com/cowtowncoder/java-classmate)
-- Commons Lang (from http://commons.apache.org/lang/)
 - FindBugs-jsr305 (from http://findbugs.sourceforge.net/)
 - GSON extensions to the Google HTTP Client Library for Java. (from https://github.com/googleapis/google-http-java-client, https://repo1.maven.org/maven2/com/google/http-client/google-http-client-gson)
 - Google Auth Library for Java - Credentials (from https://github.com/googleapis/google-cloud-java, https://repo1.maven.org/maven2/com/google/auth/google-auth-library-credentials)
@@ -45,20 +44,15 @@ The following software have components provided under the terms of this license:
 - Hibernate Validator (from https://hibernate.org/validator, https://repo1.maven.org/maven2/org/hibernate/hibernate-validator, https://repo1.maven.org/maven2/org/hibernate/validator/hibernate-validator)
 - J2ObjC Annotations (from https://github.com/google/j2objc/)
 - JBoss Logging 3 (from http://www.jboss.org, https://www.jboss.org/)
-- JJWT :: API (from https://github.com/jwtk/jjwt)
-- JJWT :: Extensions :: Jackson (from https://github.com/jwtk/jjwt)
-- JJWT :: Impl (from https://github.com/jwtk/jjwt)
 - JJWT :: Legacy Transitive Dependency Jar (from https://github.com/jwtk/jjwt)
 - JSON Small and Fast Parser (from https://repo1.maven.org/maven2/net/minidev/json-smart, https://urielch.github.io/)
 - JSON library from Android SDK (from http://developer.android.com/sdk)
 - JSONassert (from http://github.com/skyscreamer/yoga, https://github.com/skyscreamer/JSONassert)
 - JSpecify annotations (from https://jspecify.dev/)
 - Jackson datatype: JSR310 (from http://wiki.fasterxml.com/JacksonModuleJSR310, https://github.com/FasterXML/jackson-modules-java8, https://repo1.maven.org/maven2/com/fasterxml/jackson/datatype/jackson-datatype-jsr310)
-- Jackson datatype: jdk8 (from https://github.com/FasterXML/jackson-modules-java8, https://repo1.maven.org/maven2/com/fasterxml/jackson/datatype/jackson-datatype-jdk8)
 - Jackson-annotations (from http://github.com/FasterXML/jackson, http://wiki.fasterxml.com/JacksonHome)
 - Jackson-core (from http://wiki.fasterxml.com/JacksonHome, https://github.com/FasterXML/jackson-core)
 - Jackson-dataformat-YAML (from https://github.com/FasterXML/jackson, https://github.com/FasterXML/jackson-dataformats-text)
-- Jackson-module-parameter-names (from https://github.com/FasterXML/jackson-modules-java8, https://repo1.maven.org/maven2/com/fasterxml/jackson/module/jackson-module-parameter-names)
 - Jakarta Dependency Injection (from https://github.com/eclipse-ee4j/injection-api)
 - Jakarta Servlet (from https://projects.eclipse.org/projects/ee4j.servlet)
 - Jakarta Validation API (from https://beanvalidation.org, https://beanvalidation.org/)
@@ -68,20 +62,19 @@ The following software have components provided under the terms of this license:
 - Kotlin Stdlib Jdk7 (from <https://kotlinlang.org/>, https://kotlinlang.org/)
 - Kotlin Stdlib Jdk8 (from <https://kotlinlang.org/>, https://kotlinlang.org/)
 - Lettuce (from http://github.com/lettuce-io/lettuce-core, http://github.com/mp911de/lettuce/wiki, https://github.com/lettuce-io/lettuce-core/wiki, https://github.com/redis/lettuce)
-- Netty/Buffer (from https://netty.io/, https://repo1.maven.org/maven2/io/netty/netty-buffer)
+- Netty/Buffer (from http://netty.io/, https://repo1.maven.org/maven2/io/netty/netty-buffer)
 - Netty/Codec/Base (from https://netty.io/)
 - Netty/Codec/DNS (from http://netty.io/, https://repo1.maven.org/maven2/io/netty/netty-codec-dns)
 - Netty/Common (from http://netty.io/, https://repo1.maven.org/maven2/io/netty/netty-common)
 - Netty/Handler (from http://netty.io/, https://repo1.maven.org/maven2/io/netty/netty-handler)
 - Netty/Resolver (from http://netty.io/, https://repo1.maven.org/maven2/io/netty/netty-resolver)
-- Netty/Resolver/DNS (from https://netty.io/, https://repo1.maven.org/maven2/io/netty/netty-resolver-dns)
+- Netty/Resolver/DNS (from http://netty.io/, https://repo1.maven.org/maven2/io/netty/netty-resolver-dns)
 - Netty/Transport (from http://netty.io/, https://repo1.maven.org/maven2/io/netty/netty-transport)
 - Netty/Transport/Native/Unix/Common (from https://netty.io/, https://repo1.maven.org/maven2/io/netty/netty-transport-native-unix-common)
 - Non-Blocking Reactive Foundation for the JVM (from https://github.com/reactor/reactor, https://github.com/reactor/reactor-core)
 - Objenesis (from https://objenesis.org/, https://repo1.maven.org/maven2/org/objenesis/objenesis)
 - OpenCensus (from https://github.com/census-instrumentation/opencensus-java)
 - Plexus Common Utilities (from http://plexus.codehaus.org/plexus-utils, https://codehaus-plexus.github.io/plexus-utils/, https://repo1.maven.org/maven2/org/codehaus/plexus/plexus-utils)
-- PowerMock (from http://www.powermock.org, https://repo1.maven.org/maven2/org/powermock/powermock-api-mockito)
 - SnakeYAML (from http://code.google.com/p/snakeyaml/, http://www.snakeyaml.org, https://bitbucket.org/snakeyaml/snakeyaml)
 - Spring AOP (from http://www.springframework.org, https://github.com/spring-projects/spring-framework, https://repo1.maven.org/maven2/org/springframework/spring-aop)
 - Spring Beans (from http://www.springframework.org, https://github.com/SpringSource/spring-framework, https://github.com/spring-projects/spring-framework, https://repo1.maven.org/maven2/org/springframework/spring-beans)
@@ -90,7 +83,6 @@ The following software have components provided under the terms of this license:
 - Spring Boot Actuator AutoConfigure (from https://projects.spring.io/spring-boot/#/spring-boot-parent/spring-boot-actuator-autoconfigure, https://spring.io/projects/spring-boot)
 - Spring Boot Actuator Starter (from http://projects.spring.io/spring-boot/, https://spring.io/projects/spring-boot)
 - Spring Boot AutoConfigure (from https://projects.spring.io/spring-boot/#/spring-boot-parent/spring-boot-autoconfigure, https://spring.io/projects/spring-boot)
-- Spring Boot Json Starter (from https://projects.spring.io/spring-boot/#/spring-boot-parent/spring-boot-starters/spring-boot-starter-json, https://spring.io/projects/spring-boot)
 - Spring Boot Logging Starter (from http://projects.spring.io/spring-boot/, https://projects.spring.io/spring-boot/#/spring-boot-parent/spring-boot-starters/spring-boot-starter-logging, https://spring.io/projects/spring-boot)
 - Spring Boot Security Starter (from http://projects.spring.io/spring-boot/, https://spring.io/projects/spring-boot)
 - Spring Boot Starter (from http://projects.spring.io/spring-boot/, https://spring.io/projects/spring-boot)
@@ -100,7 +92,6 @@ The following software have components provided under the terms of this license:
 - Spring Boot Tomcat Starter (from http://projects.spring.io/spring-boot/, https://projects.spring.io/spring-boot/#/spring-boot-parent/spring-boot-starters/spring-boot-starter-tomcat, https://spring.io/projects/spring-boot)
 - Spring Boot Validation Starter (from http://projects.spring.io/spring-boot/, https://projects.spring.io/spring-boot/, https://spring.io/projects/spring-boot)
 - Spring Boot Web Starter (from http://projects.spring.io/spring-boot/, https://spring.io/projects/spring-boot)
-- Spring Commons Logging Bridge (from https://github.com/spring-projects/spring-framework)
 - Spring Context (from http://www.springframework.org, https://github.com/spring-projects/spring-framework, https://repo1.maven.org/maven2/org/springframework/spring-context)
 - Spring Core (from http://www.springframework.org, https://github.com/spring-projects/spring-framework, https://repo1.maven.org/maven2/org/springframework/spring-core)
 - Spring Expression Language (SpEL) (from https://github.com/SpringSource/spring-framework, https://github.com/spring-projects/spring-framework, https://repo1.maven.org/maven2/org/springframework/spring-expression)
@@ -115,7 +106,6 @@ The following software have components provided under the terms of this license:
 - Vavr (from http://vavr.io, https://vavr.io/, https://www.vavr.io)
 - Vavr Match (from http://vavr.io, https://vavr.io/)
 - error-prone annotations (from https://errorprone.info/, https://repo1.maven.org/maven2/com/google/errorprone/error_prone_annotations)
-- io.grpc:grpc-api (from https://github.com/grpc/grpc-java)
 - io.grpc:grpc-context (from https://github.com/grpc/grpc-java)
 - jackson-databind (from http://github.com/FasterXML/jackson, http://wiki.fasterxml.com/JacksonHome, https://github.com/FasterXML/jackson)
 - json-path (from http://code.google.com/p/json-path/, https://github.com/jayway/JsonPath)
@@ -126,10 +116,24 @@ The following software have components provided under the terms of this license:
 - org.apiguardian:apiguardian-api (from https://github.com/apiguardian-team/apiguardian)
 - org.opentest4j:opentest4j (from https://github.com/ota4j-team/opentest4j)
 - org.xmlunit:xmlunit-core (from http://www.xmlunit.org/, https://www.xmlunit.org/)
-- powermock-module-junit4 (from http://www.powermock.org/)
 - proto-google-common-protos (from https://github.com/googleapis/api-client-staging, https://github.com/googleapis/google-cloud-java/tree/main/sdk-platform-java, https://github.com/googleapis/googleapis, https://github.com/googleapis/java-iam/proto-google-common-protos)
 - resilience4j (from https://github.com/resilience4j/resilience4j, https://resilience4j.readme.io/, ttps://resilience4j.readme.io)
+- spring-boot-health (from https://spring.io/projects/spring-boot)
+- spring-boot-http-converter (from https://spring.io/projects/spring-boot)
+- spring-boot-jackson (from https://spring.io/projects/spring-boot)
 - spring-boot-loader (from https://spring.io/projects/spring-boot)
+- spring-boot-micrometer-metrics (from https://spring.io/projects/spring-boot)
+- spring-boot-micrometer-observation (from https://spring.io/projects/spring-boot)
+- spring-boot-security (from https://spring.io/projects/spring-boot)
+- spring-boot-servlet (from https://spring.io/projects/spring-boot)
+- spring-boot-starter-jackson (from https://spring.io/projects/spring-boot)
+- spring-boot-starter-micrometer-metrics (from https://spring.io/projects/spring-boot)
+- spring-boot-starter-tomcat-runtime (from https://spring.io/projects/spring-boot)
+- spring-boot-starter-webmvc (from https://spring.io/projects/spring-boot)
+- spring-boot-tomcat (from https://spring.io/projects/spring-boot)
+- spring-boot-validation (from https://spring.io/projects/spring-boot)
+- spring-boot-web-server (from https://spring.io/projects/spring-boot)
+- spring-boot-webmvc (from https://spring.io/projects/spring-boot)
 - spring-security-test (from http://spring.io/spring-security, https://spring.io/projects/spring-security, https://spring.io/spring-security)
 - springdoc-openapi-starter-common (from https://springdoc.org/)
 - springdoc-openapi-starter-webmvc-api (from https://springdoc.org/)
@@ -242,7 +246,6 @@ The following software have components provided under the terms of this license:
 - Jakarta Annotations API (from https://projects.eclipse.org/projects/ee4j.ca)
 - Jakarta Dependency Injection (from https://github.com/eclipse-ee4j/injection-api)
 - Jakarta Servlet (from https://projects.eclipse.org/projects/ee4j.servlet)
-- Jakarta Validation API (from https://beanvalidation.org, https://beanvalidation.org/)
 - Jakarta XML Binding API (from https://repo1.maven.org/maven2/jakarta/xml/bind/jakarta.xml.bind-api, https://repo1.maven.org/maven2/org/jboss/spec/javax/xml/bind/jboss-jaxb-api_2.3_spec)
 
 ========================================================================
@@ -296,7 +299,6 @@ MIT
 ========================================================================
 The following software have components provided under the terms of this license:
 
-- Checker Qual (from https://checkerframework.org)
 - JUL to SLF4J bridge (from http://www.slf4j.org, http://www.slf4j.org/)
 - Jackson-core (from http://wiki.fasterxml.com/JacksonHome, https://github.com/FasterXML/jackson-core)
 - Java JWT (from http://www.jwt.io, https://github.com/auth0/java-jwt)
@@ -312,18 +314,10 @@ The following software have components provided under the terms of this license:
 - webjars-locator-lite (from https://webjars.org/)
 
 ========================================================================
-SPL-1.0
-========================================================================
-The following software have components provided under the terms of this license:
-
-- Checker Qual (from https://checkerframework.org)
-
-========================================================================
 cc-pd
 ========================================================================
 The following software have components provided under the terms of this license:
 
-- Guava: Google Core Libraries for Java (from http://code.google.com/p/guava-libraries, https://github.com/google/guava, https://repo1.maven.org/maven2/com/google/guava/guava)
 - Netty/Codec/Base (from https://netty.io/)
 
 ========================================================================

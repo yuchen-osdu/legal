@@ -1,17 +1,13 @@
 package org.opengroup.osdu.legal.config;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonToken;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.core.JsonParser;
+import tools.jackson.core.JsonToken;
+import tools.jackson.databind.DeserializationContext;
+import tools.jackson.databind.ValueDeserializer;
+import tools.jackson.databind.DatabindException;
+import tools.jackson.databind.JsonNode;
 import org.opengroup.osdu.core.common.model.legal.Properties;
-
-import java.io.IOException;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -24,7 +20,7 @@ import java.util.Set;
  * {@code CreateLegalTagProperties.additionalProperties: false}. Shared {@link Properties}
  * keeps {@code @JsonIgnoreProperties(ignoreUnknown = true)} for response/persistence paths.
  */
-public final class CreateLegalTagPropertiesDeserializer extends JsonDeserializer<Properties> {
+public final class CreateLegalTagPropertiesDeserializer extends ValueDeserializer<Properties> {
 
     private static final String EXTENSION_PROPERTIES = "extensionProperties";
     private static final String COUNTRY_OF_ORIGIN = "countryOfOrigin";
@@ -49,59 +45,54 @@ public final class CreateLegalTagPropertiesDeserializer extends JsonDeserializer
     }
 
     @Override
-    public Properties deserialize(JsonParser parser, DeserializationContext context) throws IOException {
+    public Properties deserialize(JsonParser parser, DeserializationContext context) {
         if (!parser.hasToken(JsonToken.START_OBJECT)) {
             return (Properties) context.handleUnexpectedToken(Properties.class, parser);
         }
-        ObjectMapper mapper = (ObjectMapper) parser.getCodec();
-        JsonNode node = mapper.readTree(parser);
+        JsonNode node = context.readTree(parser);
         rejectUnknownProperties(parser, node);
         rejectInvalidPropertyTypes(parser, node);
-        return mapper.treeToValue(node, Properties.class);
+        return context.readTreeAsValue(node, Properties.class);
     }
 
     @Override
-    public Properties getNullValue(DeserializationContext context) throws JsonMappingException {
-        throw JsonMappingException.from(context.getParser(), "JSON null is not an object");
+    public Properties getNullValue(DeserializationContext context) {
+        throw DatabindException.from(context, "JSON null is not an object");
     }
 
-    private static void rejectUnknownProperties(JsonParser parser, JsonNode node)
-            throws JsonMappingException {
-        Iterator<String> names = node.fieldNames();
-        while (names.hasNext()) {
-            String name = names.next();
+    private static void rejectUnknownProperties(JsonParser parser, JsonNode node) {
+        for (String name : node.propertyNames()) {
             if (!ALLOWED_PROPERTIES.contains(name)) {
-                throw JsonMappingException.from(parser, "Unrecognized field \"" + name + "\"");
+                throw DatabindException.from(parser, "Unrecognized field \"" + name + "\"");
             }
         }
     }
 
-    private static void rejectInvalidPropertyTypes(JsonParser parser, JsonNode node)
-            throws JsonMappingException {
+    private static void rejectInvalidPropertyTypes(JsonParser parser, JsonNode node) {
         for (String property : STRING_PROPERTIES) {
             if (!node.has(property)) {
                 continue;
             }
-            if (!node.get(property).isTextual()) {
-                throw JsonMappingException.from(parser,
+            if (!node.get(property).isString()) {
+                throw DatabindException.from(parser,
                         "JSON value is not a string for property '" + property + "'");
             }
         }
         if (node.has(COUNTRY_OF_ORIGIN)) {
             JsonNode countryOfOrigin = node.get(COUNTRY_OF_ORIGIN);
             if (!countryOfOrigin.isArray()) {
-                throw JsonMappingException.from(parser,
+                throw DatabindException.from(parser,
                         "JSON value is not an array for property '" + COUNTRY_OF_ORIGIN + "'");
             }
             for (JsonNode item : countryOfOrigin) {
-                if (!item.isTextual()) {
-                    throw JsonMappingException.from(parser,
+                if (!item.isString()) {
+                    throw DatabindException.from(parser,
                             "JSON value is not a string for property '" + COUNTRY_OF_ORIGIN + "' items");
                 }
             }
         }
         if (node.has(EXTENSION_PROPERTIES) && !node.get(EXTENSION_PROPERTIES).isObject()) {
-            throw JsonMappingException.from(parser,
+            throw DatabindException.from(parser,
                     "JSON value is not an object for property '" + EXTENSION_PROPERTIES + "'");
         }
     }

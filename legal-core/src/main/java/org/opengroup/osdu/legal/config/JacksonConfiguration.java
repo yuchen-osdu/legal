@@ -1,10 +1,10 @@
 package org.opengroup.osdu.legal.config;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.cfg.CoercionAction;
-import com.fasterxml.jackson.databind.cfg.CoercionInputShape;
-import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
+import tools.jackson.databind.DeserializationFeature;
+import tools.jackson.databind.cfg.CoercionAction;
+import tools.jackson.databind.cfg.CoercionInputShape;
+import tools.jackson.databind.cfg.MapperBuilder;
+import org.springframework.boot.jackson.autoconfigure.JsonMapperBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -19,25 +19,25 @@ import org.springframework.context.annotation.Configuration;
 public class JacksonConfiguration {
 
     @Bean
-    public Jackson2ObjectMapperBuilderCustomizer strictStringCoercionCustomizer() {
-        return builder -> builder.postConfigurer(JacksonConfiguration::applyStrictStringCoercion);
+    public JsonMapperBuilderCustomizer strictStringCoercionCustomizer() {
+        return JacksonConfiguration::applyStrictStringCoercion;
     }
 
-    public static void applyStrictStringCoercion(ObjectMapper objectMapper) {
-        objectMapper.disable(DeserializationFeature.ACCEPT_FLOAT_AS_INT);
-        objectMapper.coercionConfigFor(String.class)
+    public static void applyStrictStringCoercion(MapperBuilder<?, ?> builder) {
+        builder.disable(DeserializationFeature.ACCEPT_FLOAT_AS_INT);
+        builder.withCoercionConfig(String.class, config -> config
                 .setCoercion(CoercionInputShape.Boolean, CoercionAction.Fail)
                 .setCoercion(CoercionInputShape.Integer, CoercionAction.Fail)
                 .setCoercion(CoercionInputShape.Float, CoercionAction.Fail)
                 .setCoercion(CoercionInputShape.EmptyArray, CoercionAction.Fail)
-                .setCoercion(CoercionInputShape.EmptyObject, CoercionAction.Fail);
-        objectMapper.coercionConfigFor(Integer.class)
+                .setCoercion(CoercionInputShape.EmptyObject, CoercionAction.Fail));
+        builder.withCoercionConfig(Integer.class, config -> config
                 .setCoercion(CoercionInputShape.String, CoercionAction.Fail)
                 .setCoercion(CoercionInputShape.Float, CoercionAction.Fail)
-                .setCoercion(CoercionInputShape.Boolean, CoercionAction.Fail);
-        objectMapper.coercionConfigFor(Integer.TYPE)
+                .setCoercion(CoercionInputShape.Boolean, CoercionAction.Fail));
+        builder.withCoercionConfig(Integer.TYPE, config -> config
                 .setCoercion(CoercionInputShape.String, CoercionAction.Fail)
                 .setCoercion(CoercionInputShape.Float, CoercionAction.Fail)
-                .setCoercion(CoercionInputShape.Boolean, CoercionAction.Fail);
+                .setCoercion(CoercionInputShape.Boolean, CoercionAction.Fail));
     }
 }
