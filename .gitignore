@@ -1,5 +1,6 @@
 HELP.md
 target/
+.flattened-pom.xml
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**
 !**/src/test/**
@@ -42,3 +43,8 @@ build/
 
 # Other
 **/custom-values.yaml
+
+# Schemathesis
+schemathesis-tests/output/
+schemathesis-tests/.schemathesis/
+schemathesis-tests/.hypothesis/
